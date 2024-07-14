@@ -5,7 +5,7 @@ import { AstroSite } from "sst/constructs";
 export default {
 	config(_input) {
 		return {
-			name: "kwicherbelliaken.xyz",
+			name: "kwicherbelliaken-xyz",
 			region: "ap-southeast-2",
 		};
 	},
