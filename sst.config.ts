@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import type { SSTConfig } from "sst";
 
 import { AstroSite } from "sst/constructs";
@@ -14,7 +17,7 @@ export default {
 			const site = new AstroSite(stack, "site", {
 				customDomain: {
 					domainAlias: "www.kwicherbelliaken.studio",
-					domainName: app.stage === "production" ? "kwicherbelliaken.studio" : undefined,
+					domainName: app.stage === "production" ? "kwicherbelliaken.studio" : "",
 				},
 			});
 

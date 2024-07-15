@@ -54,6 +54,9 @@ export default defineConfig({
 			exclude: ["@resvg/resvg-js"],
 		},
 		plugins: [rawFonts([".ttf", ".woff"])],
+		ssr: {
+			external: ["@resvg/resvg-js"],
+		},
 	},
 });
 
