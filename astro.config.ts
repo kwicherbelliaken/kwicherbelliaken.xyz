@@ -4,6 +4,7 @@ import tailwind from "@astrojs/tailwind";
 import { defineConfig } from "astro/config";
 import expressiveCode from "astro-expressive-code";
 import icon from "astro-icon";
+import aws from "astro-sst";
 import fs from "fs";
 import rehypeExternalLinks from "rehype-external-links";
 import remarkUnwrapImages from "remark-unwrap-images";
@@ -13,6 +14,7 @@ import { remarkReadingTime } from "./src/utils/remark-reading-time";
 
 // https://astro.build/config
 export default defineConfig({
+	adapter: aws(),
 	image: {
 		domains: ["webmention.io"],
 	},
@@ -42,15 +44,19 @@ export default defineConfig({
 			},
 		},
 	},
+	output: "server",
 	// https://docs.astro.build/en/guides/prefetch/
 	prefetch: true,
 	// ! Please remember to replace the following site property with your own domain
-	site: "https://astro-cactus.chriswilliams.dev/",
+	site: "https://kwicherbelliaken.studio/",
 	vite: {
 		optimizeDeps: {
 			exclude: ["@resvg/resvg-js"],
 		},
 		plugins: [rawFonts([".ttf", ".woff"])],
+		ssr: {
+			external: ["@resvg/resvg-js"],
+		},
 	},
 });
 
