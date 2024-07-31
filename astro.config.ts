@@ -44,7 +44,7 @@ export default defineConfig({
 			},
 		},
 	},
-	output: "server",
+	output: "hybrid",
 	// https://docs.astro.build/en/guides/prefetch/
 	prefetch: true,
 	// ! Please remember to replace the following site property with your own domain
