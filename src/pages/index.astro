@@ -1,8 +1,18 @@
 ---
+import colSpan1RowSpan1 from "@/assets/col-span-1-row-span-1.png";
+import colSpan1RowSpan2 from "@/assets/col-span-1-row-span-2.png";
+import colSpan3RowSpan1 from "@/assets/col-span-3-row-span-1.png";
+import colSpan4RowSpan1 from "@/assets/col-span-4-row-span-1.png";
+import colSpan6RowSpan4Left from "@/assets/col-span-6-row-span-4-left.png";
+import colSpan6RowSpan4Right from "@/assets/col-span-6-row-span-4-right.png";
+import colSpan8RowSpan1 from "@/assets/col-span-8-row-span-1.png";
+import colSpan8RowSpan1Bottom from "@/assets/col-span-8-row-span-1-bottom.png";
+import colSpan11RowSpan2 from "@/assets/col-span-11-row-span-2.png";
 import SocialList from "@/components/SocialList.astro";
 import PostPreview from "@/components/blog/PostPreview.astro";
 import { getAllPosts, sortMDByDate } from "@/data/post";
 import PageLayout from "@/layouts/Base.astro";
+import { Image } from "astro:assets";
 
 const MAX_POSTS = 10;
 const allPosts = await getAllPosts();
@@ -54,12 +64,76 @@ const cactusTech: { desc: string; href: string; title: string }[] = [
 
 <PageLayout meta={{ title: "Home" }}>
 	<section>
+		<div class="grid grid-cols-12 grid-rows-8 outline outline-black">
+			<div class="col-span-1 row-span-1 bg-[#deff00]">
+				<Image
+					alt="A cartoon cactus looking at the 'Astro.build' logo"
+					loading="eager"
+					src={colSpan1RowSpan1}
+				/>
+			</div>
+			<div class="col-span-8 row-span-1 bg-[#fe6abd]">
+				<Image
+					alt="A cartoon cactus looking at the 'Astro.build' logo"
+					loading="eager"
+					src={colSpan8RowSpan1}
+				/>
+			</div>
+			<div class="col-span-3 row-span-1 bg-[#0199fe]">
+				<Image
+					alt="A cartoon cactus looking at the 'Astro.build' logo"
+					loading="eager"
+					src={colSpan3RowSpan1}
+				/>
+			</div>
+
+			<div class="col-span-6 row-span-4 bg-[#deff00]">
+				<Image
+					alt="A cartoon cactus looking at the 'Astro.build' logo"
+					loading="eager"
+					src={colSpan6RowSpan4Left}
+				/>
+			</div>
+			<div class="col-span-6 row-span-4 bg-[#deff00]">
+				<Image
+					alt="A cartoon cactus looking at the 'Astro.build' logo"
+					loading="eager"
+					src={colSpan6RowSpan4Right}
+				/>
+			</div>
+
+			<div class="col-span-11 row-span-2 bg-[#fe6abd]">
+				<Image
+					alt="A cartoon cactus looking at the 'Astro.build' logo"
+					loading="eager"
+					src={colSpan11RowSpan2}
+				/>
+			</div>
+
+			<div class="col-span-1 row-span-2 bg-[#0199fe]">
+				<Image
+					alt="A cartoon cactus looking at the 'Astro.build' logo"
+					loading="eager"
+					src={colSpan1RowSpan2}
+				/>
+			</div>
+			<div class="col-span-4 row-span-1 bg-[#0199fe]">
+				<Image
+					alt="A cartoon cactus looking at the 'Astro.build' logo"
+					loading="eager"
+					src={colSpan4RowSpan1}
+				/>
+			</div>
+			<div class="col-span-8 row-span-1 bg-[#fc243d]">
+				<Image
+					alt="A cartoon cactus looking at the 'Astro.build' logo"
+					loading="eager"
+					src={colSpan8RowSpan1Bottom}
+				/>
+			</div>
+		</div>
+
 		<h1 class="title mb-6">Hello World!</h1>
-		<p class="mb-4">
-			Hi, I’m a theme for Astro, an example of how you can use this starter to create a personal
-			blog. If you want to know more about how you can customise me, add more posts, and make it
-			your own, click on the github icon link below and it will take you to my repo.
-		</p>
 		<SocialList />
 	</section>
 	<section aria-label="Blog post list" class="mt-16">
