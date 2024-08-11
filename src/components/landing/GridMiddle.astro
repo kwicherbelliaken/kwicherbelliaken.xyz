@@ -1,11 +1,29 @@
 ---
 import colSpan6RowSpan4Left from "@/assets/col-span-6-row-span-4-left.png";
 import colSpan6RowSpan4Right from "@/assets/col-span-6-row-span-4-right.png";
+import gremlinEyesOpen from "@/assets/gremlin-02-eyes-open.png";
+import gremlinEyesShut from "@/assets/gremlin-02-eyes-shut.png";
+
 import { Image } from "astro:assets";
+
+const pseudoElementClass =
+	"before:content-[' '] before:duration-750 before:absolute before:left-0 before:top-0 before:h-full before:w-full before:rounded-3xl before:bg-red-400 before:bg-opacity-40 before:opacity-0 before:outline before:outline-red-500 before:transition-opacity before:delay-75 before:ease-in-out hover:before:opacity-100 before:blur-md";
 ---
 
 <>
-	<div class="col-span-6 row-span-4">
+	<div class={`relative col-span-6 row-span-4 ${pseudoElementClass} group`}>
+		<Image
+			alt="A cartoon cactus looking at the 'Astro.build' logo"
+			class="absolute left-0 top-0 h-full opacity-0 group-hover:opacity-100"
+			loading="eager"
+			src={gremlinEyesOpen}
+		/>
+		<Image
+			alt="A cartoon cactus looking at the 'Astro.build' logo"
+			class="duration-750 absolute left-0 top-0 h-full opacity-0 transition-opacity delay-300 group-hover:opacity-100"
+			loading="eager"
+			src={gremlinEyesShut}
+		/>
 		<Image
 			alt="A cartoon cactus looking at the 'Astro.build' logo"
 			class="h-full"
