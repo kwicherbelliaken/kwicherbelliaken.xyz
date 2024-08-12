@@ -8,8 +8,10 @@ import gremlinEyesHalfOpen from "@/assets/combined-eyes-half-open-01.png";
 import gremlinEyesOpen from "@/assets/combined-eyes-open.png";
 import { Image } from "astro:assets";
 
-const pseudoElementClass =
-	"before:content-[' '] before:duration-750 before:absolute before:left-0 before:top-0 before:h-full before:w-full before:rounded-3xl before:bg-red-400 before:bg-opacity-40 before:opacity-0 before:outline before:outline-red-500 before:transition-opacity before:delay-75 before:ease-in-out hover:before:opacity-100 before:blur-md";
+const radialGradientClass =
+	"before:bg-[radial-gradient(circle,_var(--tw-gradient-stops))] from-[#e1e7fc] via-[#deff00] to-[#fe6abd] to-100%";
+
+const pseudoElementClass = `${radialGradientClass} before:content-[' '] before:duration-750 before:absolute before:-left-[2rem] before:-top-[2rem] before:h-[calc(100%+4rem)] before:w-[calc(100%+4rem)] before:rounded-full before:opacity-0 before:transition-opacity before:delay-75 before:ease-in-out hover:before:opacity-80 before:blur-lg`;
 ---
 
 <>
