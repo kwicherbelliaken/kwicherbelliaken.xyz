@@ -1,0 +1,24 @@
+---
+import colSpan6RowSpan4Left from "@/assets/col-span-6-row-span-4-left.png";
+import colSpan6RowSpan4Right from "@/assets/col-span-6-row-span-4-right.png";
+import { Image } from "astro:assets";
+---
+
+<>
+	<div class="col-span-6 row-span-4">
+		<Image
+			alt="A cartoon cactus looking at the 'Astro.build' logo"
+			class="h-full"
+			loading="eager"
+			src={colSpan6RowSpan4Left}
+		/>
+	</div>
+	<div class="col-span-6 row-span-4">
+		<Image
+			alt="A cartoon cactus looking at the 'Astro.build' logo"
+			class="h-full"
+			loading="eager"
+			src={colSpan6RowSpan4Right}
+		/>
+	</div>
+</>

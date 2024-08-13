@@ -1,0 +1,43 @@
+---
+import colSpan11RowSpan2 from "@/assets/col-span-11-row-span-2.png";
+import colSpan1RowSpan2 from "@/assets/col-span-1-row-span-2.png";
+import colSpan4RowSpan1 from "@/assets/col-span-4-row-span-1.png";
+import colSpan8RowSpan1Bottom from "@/assets/col-span-8-row-span-1-bottom.png";
+
+import { Image } from "astro:assets";
+---
+
+<>
+	<div class="col-span-11 row-span-2">
+		<Image
+			alt="A cartoon cactus looking at the 'Astro.build' logo"
+			class="h-full"
+			loading="eager"
+			src={colSpan11RowSpan2}
+		/>
+	</div>
+
+	<div class="col-span-1 row-span-2">
+		<Image
+			alt="A cartoon cactus looking at the 'Astro.build' logo"
+			class="h-full"
+			loading="eager"
+			src={colSpan1RowSpan2}
+		/>
+	</div>
+	<div class="col-span-4 row-span-1">
+		<Image
+			alt="A cartoon cactus looking at the 'Astro.build' logo"
+			class="h-full"
+			loading="eager"
+			src={colSpan4RowSpan1}
+		/>
+	</div>
+	<div class="col-span-8 row-span-1">
+		<Image
+			alt="A cartoon cactus looking at the 'Astro.build' logo"
+			loading="eager"
+			src={colSpan8RowSpan1Bottom}
+		/>
+	</div>
+</>
