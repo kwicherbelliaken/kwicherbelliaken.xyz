@@ -2,32 +2,11 @@
 import colSpan1RowSpan1 from "@/assets/col-span-1-row-span-1.png";
 import colSpan3RowSpan1 from "@/assets/col-span-3-row-span-1.png";
 import colSpan8RowSpan1 from "@/assets/col-span-8-row-span-1.png";
-import gremlinEyesOpen from "@/assets/gremlin-01-eyes-open.png";
-import gremlinEyesShut from "@/assets/gremlin-01-eyes-shut.png";
 import { Image } from "astro:assets";
-
-
-
-
-
-const pseudoElementClass =
-	"before:content-[' '] before:duration-750 before:absolute before:left-[-75px] before:top-[-75px] before:h-[200px] before:w-[200px] before:rounded-2xl before:bg-red-400 before:bg-opacity-30 before:opacity-0 before:outline before:outline-red-500 before:transition-opacity before:delay-75 before:ease-in-out hover:before:opacity-100 before:blur-2xl";
 ---
 
 <>
-	<div class={`relative col-span-1 row-span-1 ${pseudoElementClass} group`}>
-		<Image
-			alt="A cartoon cactus looking at the 'Astro.build' logo"
-			class="absolute left-0 top-0 h-full opacity-0 group-hover:opacity-100"
-			loading="eager"
-			src={gremlinEyesOpen}
-		/>
-		<Image
-			alt="A cartoon cactus looking at the 'Astro.build' logo"
-			class="duration-750 absolute left-0 top-0 opacity-0 transition-opacity delay-300 group-hover:opacity-100"
-			loading="eager"
-			src={gremlinEyesShut}
-		/>
+	<div class={`col-span-1 row-span-1`}>
 		<Image
 			alt="A cartoon cactus looking at the 'Astro.build' logo"
 			class="h-full"
