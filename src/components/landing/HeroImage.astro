@@ -2,9 +2,11 @@
 import GridBottom from "./GridBottom.astro";
 import GridMiddle from "./GridMiddle.astro";
 import GridTop from "./GridTop.astro";
+const pseudoElementClass =
+	'before:bg-[url("../assets/kandy-korner.jpg")] before:bg-cover before:h-full before:w-full before:absolute before:top-0 before:left-0';
 ---
 
-<div class="grid grid-cols-12 grid-rows-8 outline outline-black">
+<div class={`${pseudoElementClass} grid grid-cols-12 grid-rows-8 outline outline-black relative`}>
 	<GridTop />
 
 	<GridMiddle />
