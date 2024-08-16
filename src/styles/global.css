@@ -35,6 +35,6 @@
 	}
 
 	main {
-		@apply mt-28;
+		@apply mt-8 sm:mt-28;
 	}
 }
