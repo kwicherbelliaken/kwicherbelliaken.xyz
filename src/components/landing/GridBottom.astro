@@ -11,26 +11,26 @@ import { Image } from "astro:assets";
 const radialGradientClass =
 	"before:bg-[radial-gradient(circle,_var(--tw-gradient-stops))] from-[#e1e7fc] via-[#deff00] to-[#fe6abd] to-100%";
 
-const pseudoElementClass = `${radialGradientClass} before:content-[' '] before:absolute before:-left-[2rem] before:-top-[2rem] before:h-[calc(100%+4rem)] before:w-[calc(100%+4rem)] before:rounded-full before:opacity-0 before:transition-opacity before:ease-in-out hover:before:opacity-80 before:blur-lg hover:before:animate-pulse`;
+const pseudoElementClass = `${radialGradientClass} before:z-10 before:content-[' '] before:absolute before:-left-[2rem] before:-top-[2rem] before:h-[calc(100%+4rem)] before:w-[calc(100%+4rem)] before:rounded-full before:opacity-0 before:transition-opacity before:ease-in-out hover:before:opacity-80 before:blur-lg hover:before:animate-pulse`;
 ---
 
 <>
 	<div class={`col-span-11 row-span-2 relative group ${pseudoElementClass}`}>
 		<Image
 			alt="A cartoon cactus looking at the 'Astro.build' logo"
-			class="absolute left-0 top-0 h-full opacity-0 group-hover:opacity-100"
+			class="absolute left-0 top-0 z-20 h-full opacity-0 group-hover:opacity-100"
 			loading="eager"
 			src={gremlinEyesOpen}
 		/>
 		<Image
 			alt="A cartoon cactus looking at the 'Astro.build' logo"
-			class="absolute left-0 top-0 h-full opacity-0 transition-opacity delay-100 group-hover:opacity-100 group-hover:delay-300"
+			class="absolute left-0 top-0 z-20 h-full opacity-0 transition-opacity delay-100 group-hover:opacity-100 group-hover:delay-300"
 			loading="eager"
 			src={gremlinEyesHalfOpen}
 		/>
 		<Image
 			alt="A cartoon cactus looking at the 'Astro.build' logo"
-			class="absolute left-0 top-0 h-full opacity-0 transition-opacity delay-100 group-hover:opacity-100 group-hover:delay-[1050ms] group-hover:duration-200"
+			class="absolute left-0 top-0 z-20 h-full opacity-0 transition-opacity delay-100 group-hover:opacity-100 group-hover:delay-[1050ms] group-hover:duration-200"
 			loading="eager"
 			src={gremlinEyesShut}
 		/>
