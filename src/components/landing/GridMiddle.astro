@@ -8,17 +8,19 @@ import gremlinEyesShut from "@/assets/gremlin-02-eyes-shut.png";
 import { Image } from "astro:assets";
 
 const radialGradientClass =
-	"before:bg-[radial-gradient(circle,_var(--tw-gradient-stops))] from-[#e1e7fc] via-[#fc243d] via-[percentage:35%_50%] to-[#ff7de0] to-100%";
+	"before:z-10 before:content-[' '] before:absolute before:-left-[4rem] before:-top-[4rem] before:h-[calc(100%+8rem)] before:w-[calc(100%+8rem)] before:rounded-full before:bg-opacity-40 before:opacity-0 before:transition-opacity before:ease-in-out hover:before:opacity-80 before:blur-lg hover:before:animate-pulse";
 
-const radialGradientClassBlue =
-	"before:bg-[radial-gradient(circle,_var(--tw-gradient-stops))] from-[#0199fe] to-[#98e432]";
+const radialGradientPinkClass = `${radialGradientClass} before:bg-[radial-gradient(circle,_var(--tw-gradient-stops))] from-[#e1e7fc] via-[#fc243d] via-[percentage:35%_50%] to-[#ff7de0] to-100%`;
+
+const radialGradientBlueClass =
+	`${radialGradientClass} before:bg-[radial-gradient(circle,_var(--tw-gradient-stops))] from-[#0199fe] to-[#98e432]`;
 
 const getPseudoElementClass = (gradientVariant: "blue" | "pink") => {
 	if (gradientVariant === "blue") {
-		return `${radialGradientClassBlue} before:content-[' '] before:absolute before:-left-[2rem] before:-top-[2rem] before:h-[calc(100%+4rem)] before:w-[calc(100%+4rem)] before:rounded-full before:bg-opacity-40 before:opacity-0 before:transition-opacity before:ease-in-out hover:before:opacity-80 before:blur-lg hover:before:animate-pulse`;
+		return `${radialGradientBlueClass}`;
 	}
 
-	return `${radialGradientClass} before:z-10 before:content-[' '] before:absolute before:-left-[4rem] before:-top-[4rem] before:h-[calc(100%+8rem)] before:w-[calc(100%+8rem)] before:rounded-full before:bg-opacity-40 before:opacity-0 before:transition-opacity before:ease-in-out hover:before:opacity-80 before:blur-lg hover:before:animate-pulse`;
+	return `${radialGradientPinkClass}`;
 };
 ---
 
@@ -43,7 +45,7 @@ const getPseudoElementClass = (gradientVariant: "blue" | "pink") => {
 			src={colSpan6RowSpan4Left}
 		/>
 	</div>
-	<div class={`relative col-span-6 row-span-4 ${getPseudoElementClass("blue")} before:z-20 group`}>
+	<div class={`relative col-span-6 row-span-4 ${getPseudoElementClass("blue")} group`}>
 		<Image
 			alt="A cartoon cactus looking at the 'Astro.build' logo"
 			class="absolute left-0 top-0 z-20 h-full opacity-0 group-hover:opacity-100"
