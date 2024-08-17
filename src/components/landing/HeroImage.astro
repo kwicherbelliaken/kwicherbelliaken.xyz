@@ -1,6 +1,5 @@
 ---
-import kwicherbelliakenScrawl from "@/assets/kwicherbelliaken.svg";
-import { Image } from "astro:assets";
+import { Icon } from "astro-icon/components";
 
 import GridBottom from "./GridBottom.astro";
 import GridMiddle from "./GridMiddle.astro";
@@ -12,12 +11,7 @@ const pseudoElementClass =
 
 <div>
 	<div class="pb-8">
-		<Image
-			alt="Kwicherbelliaken as a scrawl."
-			class="w-auto"
-			loading="eager"
-			src={kwicherbelliakenScrawl}
-		/>
+		<Icon class="h-auto w-full" name="kwicherbelliaken" />
 	</div>
 	<div class={`${pseudoElementClass} grid grid-cols-12 grid-rows-8 outline outline-black relative`}>
 		<GridTop />

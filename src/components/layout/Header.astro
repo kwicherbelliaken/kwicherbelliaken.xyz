@@ -1,7 +1,6 @@
 ---
-import kwicherbelliakenLogo from "@/assets/logo.svg";
 import { menuLinks } from "@/site-config";
-import { Image } from "astro:assets";
+import { Icon } from "astro-icon/components";
 
 import Search from "../Search.astro";
 import ThemeToggle from "../ThemeToggle.astro";
@@ -18,12 +17,7 @@ const url = new URL(Astro.request.url);
 		class="inline-flex items-center grayscale hover:filter-none sm:relative sm:inline-block"
 		href="/"
 	>
-		<Image
-			alt="The logo I associate with kwicherbelliaken.studio."
-			class="h-12 w-auto sm:h-16"
-			loading="eager"
-			src={kwicherbelliakenLogo}
-		/>
+		<Icon class="h-12 w-auto sm:h-16" name="logo" />
 	</a>
 	<nav
 		aria-label="Main menu"
