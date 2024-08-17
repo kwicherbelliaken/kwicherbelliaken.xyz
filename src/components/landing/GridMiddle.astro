@@ -11,14 +11,14 @@ const radialGradientClass =
 	"before:bg-[radial-gradient(circle,_var(--tw-gradient-stops))] from-[#e1e7fc] via-[#fc243d] via-[percentage:35%_50%] to-[#ff7de0] to-100%";
 
 const radialGradientClassBlue =
-	"before:bg-[radial-gradient(circle,_var(--tw-gradient-stops))] from-[#e1e7fc] via-[#98e432] via-[percentage:30%_40%] to-[#0199fe] to-100%";
+	"before:bg-[radial-gradient(circle,_var(--tw-gradient-stops))] from-[#0199fe] to-[#98e432]";
 
 const getPseudoElementClass = (gradientVariant: "blue" | "pink") => {
 	if (gradientVariant === "blue") {
 		return `${radialGradientClassBlue} before:content-[' '] before:absolute before:-left-[2rem] before:-top-[2rem] before:h-[calc(100%+4rem)] before:w-[calc(100%+4rem)] before:rounded-full before:bg-opacity-40 before:opacity-0 before:transition-opacity before:ease-in-out hover:before:opacity-80 before:blur-lg hover:before:animate-pulse`;
 	}
 
-	return `${radialGradientClass} before:content-[' '] before:absolute before:-left-[2rem] before:-top-[2rem] before:h-[calc(100%+4rem)] before:w-[calc(100%+4rem)] before:rounded-full before:bg-opacity-40 before:opacity-0 before:transition-opacity before:ease-in-out hover:before:opacity-80 before:blur-lg hover:before:animate-pulse`;
+	return `${radialGradientClass} before:z-10 before:content-[' '] before:absolute before:-left-[4rem] before:-top-[4rem] before:h-[calc(100%+8rem)] before:w-[calc(100%+8rem)] before:rounded-full before:bg-opacity-40 before:opacity-0 before:transition-opacity before:ease-in-out hover:before:opacity-80 before:blur-lg hover:before:animate-pulse`;
 };
 ---
 
@@ -26,13 +26,13 @@ const getPseudoElementClass = (gradientVariant: "blue" | "pink") => {
 	<div class={`relative col-span-6 row-span-4 ${getPseudoElementClass("pink")} group`}>
 		<Image
 			alt="A cartoon cactus looking at the 'Astro.build' logo"
-			class="absolute left-0 top-0 h-full opacity-0 group-hover:opacity-100"
+			class="absolute left-0 top-0 z-20 h-full opacity-0 group-hover:opacity-100"
 			loading="eager"
 			src={gremlinEyesOpen}
 		/>
 		<Image
 			alt="A cartoon cactus looking at the 'Astro.build' logo"
-			class="absolute left-0 top-0 h-full opacity-0 transition-opacity delay-200 group-hover:opacity-100 group-hover:delay-300"
+			class="absolute left-0 top-0 z-20 h-full opacity-0 transition-opacity delay-200 group-hover:opacity-100 group-hover:delay-300"
 			loading="eager"
 			src={gremlinEyesShut}
 		/>
@@ -43,16 +43,16 @@ const getPseudoElementClass = (gradientVariant: "blue" | "pink") => {
 			src={colSpan6RowSpan4Left}
 		/>
 	</div>
-	<div class={`relative col-span-6 row-span-4 ${getPseudoElementClass("blue")} group`}>
+	<div class={`relative col-span-6 row-span-4 ${getPseudoElementClass("blue")} before:z-20 group`}>
 		<Image
 			alt="A cartoon cactus looking at the 'Astro.build' logo"
-			class="absolute left-0 top-0 h-full opacity-0 group-hover:opacity-100"
+			class="absolute left-0 top-0 z-20 h-full opacity-0 group-hover:opacity-100"
 			loading="eager"
 			src={gremlinEyesOpenRight}
 		/>
 		<Image
 			alt="A cartoon cactus looking at the 'Astro.build' logo"
-			class="duration-750 absolute left-0 top-0 h-full opacity-0 transition-opacity delay-300 group-hover:opacity-100"
+			class="duration-750 absolute left-0 top-0 z-20 h-full opacity-0 transition-opacity delay-300 group-hover:opacity-100"
 			loading="eager"
 			src={gremlinEyesShutRight}
 		/>
