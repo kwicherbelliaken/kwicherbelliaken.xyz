@@ -1,5 +1,5 @@
 ---
-import kwicherbelliakenScrawl from "@/assets/kwicherbelliaken.svg";
+import kwicherbelliakenLogo from "@/assets/logo.svg";
 import { menuLinks } from "@/site-config";
 import { Image } from "astro:assets";
 
@@ -9,46 +9,48 @@ import ThemeToggle from "../ThemeToggle.astro";
 const url = new URL(Astro.request.url);
 ---
 
-<header class="group relative mb-28 flex items-center" id="main-header">
-	<div class="flex sm:flex-col">
-		<a
-			aria-current={url.pathname === "/" ? "page" : false}
-			class="inline-flex items-center grayscale hover:filter-none sm:relative sm:inline-block"
-			href="/"
-		>
-			<Image
-				alt="A handwritten scrawl of the websites title"
-				loading="eager"
-				src={kwicherbelliakenScrawl}
-			/>
-		</a>
-		<nav
-			aria-label="Main menu"
-			class="absolute -inset-x-4 top-14 hidden flex-col items-end gap-y-4 rounded-md bg-bgColor/[.85] py-4 text-accent shadow backdrop-blur group-[.menu-open]:z-50 group-[.menu-open]:flex sm:static sm:z-auto sm:-ms-4 sm:mt-1 sm:flex sm:flex-row sm:items-center sm:divide-x sm:divide-dashed sm:divide-accent sm:rounded-none sm:bg-transparent sm:py-0 sm:shadow-none sm:backdrop-blur-none"
-			id="navigation-menu"
-		>
-			{
-				menuLinks.map((link) => (
-					<a
-						aria-current={url.pathname === link.path ? "page" : false}
-						class="px-4 py-4 underline-offset-2 sm:py-0 sm:hover:underline"
-						data-astro-prefetch
-						href={link.path}
-					>
-						{link.title}
-					</a>
-				))
-			}
-		</nav>
-	</div>
+<header
+	class="group fixed left-0 top-0 z-10 flex w-full flex-row items-center justify-between border-b-2 border-b-[#ff0101] bg-bgColor p-2 align-middle"
+	id="main-header"
+>
+	<a
+		aria-current={url.pathname === "/" ? "page" : false}
+		class="inline-flex items-center grayscale hover:filter-none sm:relative sm:inline-block"
+		href="/"
+	>
+		<Image
+			alt="The logo I associate with kwicherbelliaken.studio."
+			class="h-12 w-auto sm:h-16"
+			loading="eager"
+			src={kwicherbelliakenLogo}
+		/>
+	</a>
+	<nav
+		aria-label="Main menu"
+		class="absolute -inset-x-4 top-14 hidden flex-col items-end gap-y-4 rounded-md bg-bgColor/[.85] py-4 text-accent shadow backdrop-blur group-[.menu-open]:z-50 group-[.menu-open]:flex sm:static sm:z-auto sm:-ms-4 sm:mt-1 sm:flex sm:flex-row sm:items-center sm:divide-x sm:divide-dashed sm:divide-accent sm:rounded-none sm:bg-transparent sm:py-0 sm:shadow-none sm:backdrop-blur-none"
+		id="navigation-menu"
+	>
+		{
+			menuLinks.map((link) => (
+				<a
+					aria-current={url.pathname === link.path ? "page" : false}
+					class="px-4 py-4 underline-offset-2 sm:py-0 sm:hover:underline"
+					data-astro-prefetch
+					href={link.path}
+				>
+					{link.title}
+				</a>
+			))
+		}
+	</nav>
 	<!-- <Search /> -->
 	<!-- <ThemeToggle /> -->
-	<mobile-button>
+	<mobile-button class="group relative sm:invisible sm:hidden">
 		<button
 			aria-expanded="false"
 			aria-haspopup="menu"
 			aria-label="Open main menu"
-			class="group relative ms-4 h-7 w-7 sm:invisible sm:hidden"
+			class="ms-4 h-7 w-7"
 			id="toggle-navigation-menu"
 			type="button"
 		>
