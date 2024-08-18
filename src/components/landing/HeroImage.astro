@@ -7,10 +7,19 @@ import GridTop from "./GridTop.astro";
 
 const pseudoElementClass =
 	'before:bg-[url("../assets/kandy-korner.jpg")] before:bg-cover before:h-full before:w-full before:absolute before:top-0 before:left-0';
+
+const quitPseudoElementClass =
+	"cursor-pointer after:content-[attr(data-hover)] hover:after:visible hover:after:opacity-100 after:text-8xl after:text-accent after:whitespace-nowrap after:transition-opacity after:duration-750 after:ease-in-out after:delay-75 after:invisible after:absolute after:top-0 after:left-0";
 ---
 
 <div>
-	<div class="pb-8">
+	<div class="relative pb-8">
+		<div class="absolute grid h-full w-full grid-cols-12 grid-rows-1 outline">
+			<div class=`relative col-span-5 ${quitPseudoElementClass}` data-hover="quit"></div>
+			<div class="col-span-2 bg-yellow-300 opacity-40"></div>
+			<div class="col-span-2 bg-blue-300 opacity-40"></div>
+			<div class="col-span-3 bg-green-300 opacity-40"></div>
+		</div>
 		<Icon class="h-auto w-full" name="kwicherbelliaken" />
 	</div>
 	<div class={`${pseudoElementClass} grid grid-cols-12 grid-rows-8 outline outline-black relative`}>
