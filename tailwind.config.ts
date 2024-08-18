@@ -26,10 +26,9 @@ export default {
 		require("@tailwindcss/aspect-ratio"),
 		plugin(function ({ addComponents }) {
 			addComponents({
-				".cactus-link": {
+				".kwicherbelliaken-link": {
 					"&:hover": {
-						"@apply decoration-2 decoration-accent text-accent":
-							{},
+						"@apply decoration-2 decoration-accent text-accent": {},
 					},
 					"@apply underline underline-offset-2 text-link": {},
 				},
@@ -69,7 +68,7 @@ export default {
 				DEFAULT: {
 					css: {
 						a: {
-							"@apply cactus-link": "",
+							"@apply kwicherbelliaken-link": "",
 						},
 						blockquote: {
 							borderLeftWidth: "0",
