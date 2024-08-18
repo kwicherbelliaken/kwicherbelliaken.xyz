@@ -1,11 +1,9 @@
 ---
-
 import SocialList from "@/components/SocialList.astro";
 import PostPreview from "@/components/blog/PostPreview.astro";
 import HeroImage from "@/components/landing/HeroImage.astro";
 import { getAllPosts, sortMDByDate } from "@/data/post";
 import PageLayout from "@/layouts/Base.astro";
-
 
 const MAX_POSTS = 10;
 const allPosts = await getAllPosts();
@@ -80,7 +78,12 @@ const cactusTech: { desc: string; href: string; title: string }[] = [
 					<div class="flex flex-col gap-2 sm:flex-row">
 						<dt>
 							<span class="flex">
-								<a class="cactus-link" href={href} rel="noopener noreferrer" target="_blank">
+								<a
+									class="kwicherbelliaken-link"
+									href={href}
+									rel="noopener noreferrer"
+									target="_blank"
+								>
 									{title}
 								</a>
 								:
