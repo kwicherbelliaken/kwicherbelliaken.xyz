@@ -28,9 +28,10 @@ export default {
 			addComponents({
 				".cactus-link": {
 					"&:hover": {
-						"@apply decoration-link decoration-2": {},
+						"@apply decoration-link decoration-2 decoration-site-palette-red text-site-palette-red":
+							{},
 					},
-					"@apply underline underline-offset-2": {},
+					"@apply underline underline-offset-2 text-link": {},
 				},
 				".title": {
 					"@apply text-2xl font-semibold text-accent-2": {},
@@ -46,6 +47,11 @@ export default {
 				bgColor: "hsl(var(--theme-bg) / <alpha-value>)",
 				link: "hsl(var(--theme-link) / <alpha-value>)",
 				quote: "hsl(var(--theme-quote) / <alpha-value>)",
+				["site-palette"]: {
+					blue: "hsl(var(--theme-text) / <alpha-value>)",
+					grey: "hsl(var(--theme-bg) / <alpha-value>)",
+					red: "hsl(0deg 100% 50% / <alpha-value>)",
+				},
 				textColor: "hsl(var(--theme-text) / <alpha-value>)",
 			},
 			fontFamily: {
