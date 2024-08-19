@@ -8,27 +8,43 @@ import GridTop from "./GridTop.astro";
 const pseudoElementClass =
 	'before:bg-[url("../assets/kandy-korner.jpg")] before:bg-cover before:h-full before:w-full before:absolute before:top-0 before:left-0';
 
-const quitPseudoElementClass =
-	"cursor-pointer after:content-[attr(data-hover)] hover:after:visible hover:after:opacity-100 after:text-8xl after:text-accent after:whitespace-nowrap after:transition-opacity after:duration-750 after:ease-in-out after:delay-75 after:invisible after:absolute after:top-0 after:left-0";
+const kwicherbelliakenPseudoElementClass =
+	"cursor-pointer after:content-[attr(data-hover)] hover:after:visible hover:after:opacity-100 after:text-8xl after:text-accent after:whitespace-nowrap after:transition-opacity after:duration-750 after:ease-in-out after:delay-75 after:invisible after:absolute ";
+
+const getPseudoElementClass = (explainer: "aching" | "belly" | "quit" | "yer") => {
+	if (explainer === "quit") {
+		return `${kwicherbelliakenPseudoElementClass} after:bottom-0 after:right-0`;
+	} else if (explainer === "yer") {
+		return `${kwicherbelliakenPseudoElementClass} after:top-0 after:left-0`;
+	} else if (explainer === "belly") {
+		return `${kwicherbelliakenPseudoElementClass} after:bottom-0 after:left-0`;
+	}
+};
 ---
 
 <div>
 	<div class="relative pb-8">
 		<div
-			class="group absolute grid h-full w-full grid-cols-12 grid-rows-1 outline [&:not(:hover)]:bg-transparent"
+			class="group absolute grid h-full w-full grid-cols-12 grid-rows-1 [&:not(:hover)]:bg-transparent"
 		>
 			<div
-				class=`col-span-5 ${quitPseudoElementClass} group-hover:bg-bgColor hover:!bg-transparent`
+				class=`col-span-5 ${getPseudoElementClass("quit")} group-hover:bg-bgColor hover:!bg-transparent`
 				data-hover="quit"
 			>
 			</div>
-			<div class="col-span-2 hover:!bg-transparent group-hover:bg-bgColor"></div>
 			<div
-				class="col-span-2 outline outline-2 outline-blue-500 hover:!bg-transparent group-hover:bg-bgColor"
+				class=`col-span-2 ${getPseudoElementClass("yer")} hover:!bg-transparent group-hover:bg-bgColor`
+				data-hover="yer"
 			>
 			</div>
 			<div
-				class="col-span-3 outline outline-2 outline-green-500 hover:!bg-transparent group-hover:bg-bgColor"
+				class=`col-span-2 ${getPseudoElementClass("belly")} hover:!bg-transparent group-hover:bg-bgColor`
+				data-hover="belly"
+			>
+			</div>
+			<div
+				class=`col-span-3 ${getPseudoElementClass("belly")} hover:!bg-transparent group-hover:bg-bgColor`
+				data-hover="aching"
 			>
 			</div>
 		</div>
