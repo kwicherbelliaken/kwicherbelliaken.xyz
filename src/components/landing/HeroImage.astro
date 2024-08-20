@@ -52,16 +52,20 @@ const getPseudoElementClass = (explainer: "aching" | "belly" | "quit" | "yer") =
 		<Icon class="h-auto w-full" name="kwicherbelliaken" />
 	</div>
 
-	<div class={`${pseudoElementClass} grid grid-cols-12 grid-rows-8 relative outline outline-black`}>
-		<GridTop />
+	<figure>
+		<div
+			class={`${pseudoElementClass} grid grid-cols-12 grid-rows-8 relative outline outline-black`}
+		>
+			<GridTop />
 
-		<GridMiddle />
+			<GridMiddle />
 
-		<GridBottom />
-	</div>
-	<div class="mt-2 p-2 text-[0.5rem] italic leading-3 outline outline-accent">
-		That’s a dairy, New Zealand’s answer to a corner store, for kids what the boozer is for
-		grown-ups. I spent endless afternoons, days even, out front, working through two-dollar
-		mixtures, back when two dollars meant something and could get you pillowey bag of sweets.
-	</div>
+			<GridBottom />
+		</div>
+		<figcaption class="mt-2 p-2 text-[0.5rem] italic leading-3 outline outline-accent">
+			That’s a dairy, New Zealand’s answer to a corner store, for kids what the boozer is for
+			grown-ups. I spent endless afternoons, days even, out front, working through two-dollar
+			mixtures, back when two dollars meant something and could get you pillowey bag of sweets.
+		</figcaption>
+	</figure>
 </div>
