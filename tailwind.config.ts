@@ -58,6 +58,9 @@ export default {
 				sans: [...fontFamily.sans],
 				serif: [...fontFamily.serif],
 			},
+			fontSize: {
+				"3xs": "0.50rem",
+			},
 			transitionProperty: {
 				height: "height",
 			},
