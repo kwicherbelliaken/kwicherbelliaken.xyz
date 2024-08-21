@@ -1,10 +1,11 @@
 name: ci
 
 on:
-  push:
-    branches: [master]
-  pull_request:
-    branches: [master]
+  workflow_dispatch: {}
+  # push:
+  #   branches: [master]
+  # pull_request:
+  #   branches: [master]
 
 permissions:
   contents: read
@@ -33,3 +34,31 @@ jobs:
         # ensure build works
       - name: Run build
         run: npm run build
+
+  deploy:
+    needs: lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: install node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "lts/iron"
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Run build
+        run: npm run build
+
+      - name: 🚀 Production Deploy
+        if: github.ref == 'refs/heads/master'
+        run: npx sst deploy --stage production
+        env:
+          CI: true
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
