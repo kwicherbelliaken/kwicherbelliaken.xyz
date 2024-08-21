@@ -28,7 +28,7 @@ jobs:
 
         # use astro check for issues
       - name: Run check
-        run: npm astro check
+        run: npm run check
 
         # ensure build works
       - name: Run build
