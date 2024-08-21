@@ -24,7 +24,7 @@ jobs:
           node-version: "lts/iron"
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --legacy-peer-deps
 
         # use astro check for issues
       - name: Run check
