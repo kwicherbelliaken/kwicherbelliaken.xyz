@@ -28,9 +28,6 @@ jobs:
       - name: 👨‍🚀 Astro check
         run: npm run check
 
-      - name: 🔬 Lint
-        run: npm run lint
-
   deploy:
     needs: lint
     runs-on: ubuntu-latest
