@@ -29,8 +29,10 @@ jobs:
         run: npm run check
 
   deploy:
+    name: ☁️ Cloud Deploy
     needs: lint
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
 
     steps:
       - name: ⬇️ Checkout repo
@@ -51,4 +53,3 @@ jobs:
           CI: true
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
