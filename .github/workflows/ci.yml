@@ -1,4 +1,4 @@
-name: ci
+name: 🚀 Deploy
 
 on:
   push:
@@ -10,51 +10,43 @@ permissions:
 
 jobs:
   lint:
-    name: Check for build and type issues
+    name: ⬣ ESLint
     runs-on: ubuntu-latest
 
     steps:
-      - name: checkout
+      - name: ⬇️ Checkout repo
         uses: actions/checkout@v4
 
-      - name: install node
+      - name: ⎔ Setup node
         uses: actions/setup-node@v4
         with:
           node-version: "lts/iron"
 
-      - name: Install dependencies
+      - name: 📥 Download deps
         run: npm install --legacy-peer-deps
 
-        # use astro check for issues
-      - name: Run check
+      - name: 👨‍🚀 Astro check
         run: npm run check
-
-        # ensure build works
-      - name: Run build
-        run: npm run build
 
   deploy:
     needs: lint
     runs-on: ubuntu-latest
 
     steps:
-      - name: checkout
+      - name: ⬇️ Checkout repo
         uses: actions/checkout@v4
 
-      - name: install node
+      - name: ⎔ Setup node
         uses: actions/setup-node@v4
         with:
           node-version: "lts/iron"
 
-      - name: Install dependencies
+      - name: 📥 Download deps
         run: npm install --legacy-peer-deps
-
-      - name: Run build
-        run: npm run build
 
       - name: 🚀 Production Deploy
         if: github.ref == 'refs/heads/master'
-        run: npx sst deploy --stage production
+        run: npx sst deploy --stage production # sst deploy includes a build step
         env:
           CI: true
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
