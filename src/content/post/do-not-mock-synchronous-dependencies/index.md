@@ -1,8 +1,8 @@
 ---
-title: "Do not mock synchronous dependencies"
-description: "This post is purely for testing the table of content, which should not be rendered"
-publishDate: "22 Feb 2023"
-tags: ["test", "toc"]
+title: "Oy! You don't need to mock synchronous dependencies"
+description: "Why testing real interactions makes mocking synchronous dependencies unnecessary."
+publishDate: "23 Aug 2024"
+tags: ["testing", "jest"]
 ---
 
 ## Why you can spend more time on the toilet on your phone and less time unnecessarily mocking synchronous dependencies and looking up how to spell "unncecesarilly"
