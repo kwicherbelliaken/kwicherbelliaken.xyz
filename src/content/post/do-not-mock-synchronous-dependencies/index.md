@@ -50,9 +50,6 @@ Success. We have a test for **addDate**. We have reached coverage nirvana. Namas
 
 ### Why do we mock?
 
-![[Pasted image Aug 28 (2).png]]
-[CAPTION, YEAH I JUST PLAYED THAT CARD]
-
 Unit testing involves focusing on [one element of the software at a time--hence the common term unit testing. The problem is that to make a single unit work, you often need other units](https://martinfowler.com/articles/mocksArentStubs.html#ChoosingBetweenTheDifferences "https://martinfowler.com/articles/mocksArentStubs.html#ChoosingBetweenTheDifferences").
 To accommodate for these other collaborating units, tests must make use of a _Test Double_--a generic term for any kind of pretend object used in place of a real object for testing purposes. We introduce Test Double's when the real object our test depends on is awkward to work with. A mock is an example of a Test Double.
 
