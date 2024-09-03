@@ -54,6 +54,8 @@ export default {
 				textColor: "hsl(var(--theme-text) / <alpha-value>)",
 			},
 			fontFamily: {
+				afterAllBoldSerif: ["After-All-Bold-Serif"],
+				afterAllRegular: ["After-All-Regular"],
 				// Add any custom fonts here
 				sans: [...fontFamily.sans],
 				serif: [...fontFamily.serif],
