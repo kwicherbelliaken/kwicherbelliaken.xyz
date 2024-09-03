@@ -32,9 +32,6 @@ export default {
 					},
 					"@apply underline underline-offset-2 text-link": {},
 				},
-				".title": {
-					"@apply text-2xl font-semibold text-accent-2": {},
-				},
 			});
 		}),
 	],
