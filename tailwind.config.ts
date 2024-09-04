@@ -115,8 +115,10 @@ export default {
 						},
 					},
 				},
-				cactus: {
+				kwicherbelliaken: {
 					css: {
+
+						"--tw-prose-headings": theme("colors.accent-2 / 1"),
 						"--tw-prose-body": theme("colors.textColor / 1"),
 						"--tw-prose-bold": theme("colors.textColor / 1"),
 						"--tw-prose-bullets": theme("colors.textColor / 1"),
