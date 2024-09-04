@@ -9,8 +9,13 @@
 }
 
 @font-face {
-	font-family: "After-All-Bold-Serif";
-	src: url("/fonts/after-all-bold-serif.otf") format("opentype");
+	font-family: "Maison-Neue-Mono";
+	src: url("/fonts/maison-neue-mono.ttf") format("truetype");
+}
+
+@font-face {
+	font-family: "Charter-Regular";
+	src: url("/fonts/charter-regular.woff2");
 }
 
 @layer base {
@@ -50,10 +55,14 @@
 	}
 
 	h1 {
-		@apply font-afterAllRegular pb-6 text-4xl font-bold tracking-wide md:text-6xl;
+		@apply pb-6 font-afterAllRegular text-4xl font-bold tracking-wide md:text-6xl;
 	}
 
 	h2 {
-		@apply font-afterAllBoldSerif pb-6 text-2xl font-bold tracking-wide md:text-4xl;
+		@apply pb-6 font-afterAllRegular text-2xl font-bold tracking-wide md:text-4xl;
+	}
+
+	p {
+		@apply font-maisonNeueMono;
 	}
 }
