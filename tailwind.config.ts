@@ -126,7 +126,6 @@ export default {
 						"--tw-prose-bullets": theme("colors.textColor / 1"),
 						"--tw-prose-code": theme("colors.textColor / 1"),
 						"--tw-prose-headings": theme("colors.accent-2 / 1"),
-						"--tw-prose-headings": theme("colors.accent-2 / 1"),
 						"--tw-prose-hr": "0.5px dashed #666",
 						"--tw-prose-links": theme("colors.textColor / 1"),
 						"--tw-prose-quotes": theme("colors.quote / 1"),
