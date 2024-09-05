@@ -2,6 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+	font-family: "After-All-Regular";
+	src: url("/fonts/after-all-regular.otf") format("opentype");
+	font-display: swap;
+}
+
+@font-face {
+	font-family: "After-All-Bold-Serif";
+	src: url("/fonts/after-all-bold-serif.otf") format("opentype");
+}
+
 @layer base {
 	:root,
 	:root[data-theme="light"] {
@@ -27,7 +38,7 @@
 	}
 
 	html {
-		@apply scroll-smooth relative;
+		@apply relative scroll-smooth;
 	}
 
 	body {
@@ -36,5 +47,13 @@
 
 	main {
 		@apply mt-8 sm:mt-28;
+	}
+
+	h1 {
+		@apply font-afterAllRegular pb-6 text-4xl font-bold tracking-wide md:text-6xl;
+	}
+
+	h2 {
+		@apply font-afterAllBoldSerif pb-6 text-2xl font-bold tracking-wide md:text-4xl;
 	}
 }

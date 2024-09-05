@@ -32,9 +32,6 @@ export default {
 					},
 					"@apply underline underline-offset-2 text-link": {},
 				},
-				".title": {
-					"@apply text-2xl font-semibold text-accent-2": {},
-				},
 			});
 		}),
 	],
@@ -54,6 +51,8 @@ export default {
 				textColor: "hsl(var(--theme-text) / <alpha-value>)",
 			},
 			fontFamily: {
+				afterAllBoldSerif: ["After-All-Bold-Serif"],
+				afterAllRegular: ["After-All-Regular"],
 				// Add any custom fonts here
 				sans: [...fontFamily.sans],
 				serif: [...fontFamily.serif],
