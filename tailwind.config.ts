@@ -51,8 +51,9 @@ export default {
 				textColor: "hsl(var(--theme-text) / <alpha-value>)",
 			},
 			fontFamily: {
-				afterAllBoldSerif: ["After-All-Bold-Serif"],
 				afterAllRegular: ["After-All-Regular"],
+				charterRegular: ["Charter-Regular"],
+				maisonNeueMono: ["Maison-Neue-Mono"],
 				// Add any custom fonts here
 				sans: [...fontFamily.sans],
 				serif: [...fontFamily.serif],
@@ -78,6 +79,9 @@ export default {
 						code: {
 							border: "1px dotted #666",
 							borderRadius: "2px",
+						},
+						h2: {
+							"@apply font-charterRegular": "",
 						},
 						hr: {
 							borderTopStyle: "dashed",
