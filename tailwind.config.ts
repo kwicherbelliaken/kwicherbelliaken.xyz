@@ -40,8 +40,11 @@ export default {
 			colors: {
 				accent: "hsl(var(--theme-accent) / <alpha-value>)",
 				"accent-2": "hsl(var(--theme-accent-2) / <alpha-value>)",
-				['bgColour-default']: "hsl(var(--theme-bg-default) / <alpha-value>)",
+				["bgColour-default"]: "hsl(var(--theme-bg-default) / <alpha-value>)",
 				link: "hsl(var(--theme-link) / <alpha-value>)",
+				neutral: {
+					50: "hsl(var(--base-colour-neutral-50) / <alpha-value>)",
+				},
 				quote: "hsl(var(--theme-quote) / <alpha-value>)",
 				["site-palette"]: {
 					blue: "hsl(var(--theme-text) / <alpha-value>)",
