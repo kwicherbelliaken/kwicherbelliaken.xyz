@@ -3,6 +3,9 @@ import type { Config } from "tailwindcss";
 import { fontFamily } from "tailwindcss/defaultTheme";
 import plugin from "tailwindcss/plugin";
 
+import { functionalColourTokens } from "./designTokens";
+console.log("🚀 ~ functionalColourTokens:", functionalColourTokens);
+
 export default {
 	content: [
 		"./src/**/*.{astro,html,js,jsx,md,svelte,ts,tsx,vue}",
@@ -40,11 +43,8 @@ export default {
 			colors: {
 				accent: "hsl(var(--theme-accent) / <alpha-value>)",
 				"accent-2": "hsl(var(--theme-accent-2) / <alpha-value>)",
-				["bgColour-default"]: "hsl(var(--theme-bg-default) / <alpha-value>)",
 				link: "hsl(var(--theme-link) / <alpha-value>)",
-				neutral: {
-					50: "hsl(var(--base-colour-neutral-50) / <alpha-value>)",
-				},
+				...functionalColourTokens,
 				quote: "hsl(var(--theme-quote) / <alpha-value>)",
 				["site-palette"]: {
 					blue: "hsl(var(--theme-text) / <alpha-value>)",
