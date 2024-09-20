@@ -31,7 +31,17 @@
 		--theme-accent-2: 0deg 0% 7%;
 		--theme-quote: 351deg 66% 48%;
 
-		--base-colour-neutral-50: 0deg % 100%;
+		--base-colour-neutral-50: 0deg 0% 81%;
+		--base-colour-neutral-100: 0deg 0% 77%;
+		--base-colour-neutral-200: 0deg, 0%, 69%;
+		--base-colour-neutral-300: 0deg, 0%, 61%;
+		--base-colour-neutral-400: 0deg 0% 53%;
+		--base-colour-neutral-500: 0deg 0% 45%;
+		--base-colour-neutral-600: 0deg 0% 37%;
+		--base-colour-neutral-700: 0deg 0% 28%;
+		--base-colour-neutral-800: 0deg 0% 20%;
+		--base-colour-neutral-900: 0deg 0% 12%;
+		--base-colour-neutral-950: 0deg 0% 8%;
 	}
 
 	:root[data-theme="dark"] {

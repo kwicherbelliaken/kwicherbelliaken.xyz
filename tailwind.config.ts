@@ -4,7 +4,7 @@ import { fontFamily } from "tailwindcss/defaultTheme";
 import plugin from "tailwindcss/plugin";
 
 import { functionalColourTokens } from "./designTokens";
-console.log("🚀 ~ functionalColourTokens:", functionalColourTokens);
+
 
 export default {
 	content: [
