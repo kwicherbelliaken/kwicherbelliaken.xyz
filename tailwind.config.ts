@@ -5,7 +5,6 @@ import plugin from "tailwindcss/plugin";
 
 import { functionalColourTokens } from "./designTokens";
 
-
 export default {
 	content: [
 		"./src/**/*.{astro,html,js,jsx,md,svelte,ts,tsx,vue}",
@@ -46,11 +45,6 @@ export default {
 				link: "hsl(var(--theme-link) / <alpha-value>)",
 				...functionalColourTokens,
 				quote: "hsl(var(--theme-quote) / <alpha-value>)",
-				["site-palette"]: {
-					blue: "hsl(var(--theme-text) / <alpha-value>)",
-					grey: "hsl(var(--theme-bg-default) / <alpha-value>)",
-					red: "hsl(0deg 100% 50% / <alpha-value>)",
-				},
 				textColor: "hsl(var(--theme-text) / <alpha-value>)",
 			},
 			fontFamily: {
