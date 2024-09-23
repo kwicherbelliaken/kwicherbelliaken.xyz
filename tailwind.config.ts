@@ -43,9 +43,9 @@ export default {
 				accent: "hsl(var(--theme-accent) / <alpha-value>)",
 				"accent-2": "hsl(var(--theme-accent-2) / <alpha-value>)",
 				link: "hsl(var(--theme-link) / <alpha-value>)",
-				...functionalColourTokens,
 				quote: "hsl(var(--theme-quote) / <alpha-value>)",
 				textColor: "hsl(var(--theme-text) / <alpha-value>)",
+				...functionalColourTokens,
 			},
 			fontFamily: {
 				afterAllRegular: ["After-All-Regular"],
