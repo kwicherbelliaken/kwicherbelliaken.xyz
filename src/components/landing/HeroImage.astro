@@ -28,22 +28,22 @@ const getPseudoElementClass = (explainer: "aching" | "belly" | "quit" | "yer") =
 			class="group absolute grid h-full w-full grid-cols-12 grid-rows-1 [&:not(:hover)]:bg-transparent"
 		>
 			<div
-				class=`col-span-5 ${getPseudoElementClass("quit")} group-hover:bg-bgColor hover:!bg-transparent`
+				class=`col-span-5 ${getPseudoElementClass("quit")} group-hover:bg-bgColour-default hover:!bg-transparent`
 				data-hover="quit"
 			>
 			</div>
 			<div
-				class=`col-span-2 ${getPseudoElementClass("yer")} hover:!bg-transparent group-hover:bg-bgColor`
+				class=`col-span-2 ${getPseudoElementClass("yer")} hover:!bg-transparent group-hover:bg-bgColour-default`
 				data-hover="yer"
 			>
 			</div>
 			<div
-				class=`col-span-2 ${getPseudoElementClass("belly")} hover:!bg-transparent group-hover:bg-bgColor`
+				class=`col-span-2 ${getPseudoElementClass("belly")} hover:!bg-transparent group-hover:bg-bgColour-default`
 				data-hover="belly"
 			>
 			</div>
 			<div
-				class=`col-span-3 ${getPseudoElementClass("belly")} hover:!bg-transparent group-hover:bg-bgColor`
+				class=`col-span-3 ${getPseudoElementClass("belly")} hover:!bg-transparent group-hover:bg-bgColour-default`
 				data-hover="aching"
 			>
 			</div>
@@ -62,7 +62,7 @@ const getPseudoElementClass = (explainer: "aching" | "belly" | "quit" | "yer") =
 
 			<GridBottom />
 		</div>
-		<figcaption class="text-3xs mt-2 p-2 italic leading-3 outline outline-accent">
+		<figcaption class="mt-2 p-2 text-3xs italic leading-3 outline outline-accent">
 			That’s a dairy, New Zealand’s answer to a corner store, for kids what the boozer is for
 			grown-ups. I spent endless afternoons, days even, out front, working through two-dollar
 			mixtures, back when two dollars meant something and could get you pillowey bag of sweets.

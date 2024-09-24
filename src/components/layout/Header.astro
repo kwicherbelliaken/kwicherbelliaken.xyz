@@ -15,7 +15,7 @@ const mobileNavLinksClass =
 	"top-[calc(100%+2px)] group-[.menu-open]:z-50 group-[.menu-open]:flex group-[.menu-open]:w-full group-[.menu-open]:left-0";
 ---
 
-<header class="fixed left-0 top-0 z-50 w-full border-b-2 border-b-accent bg-bgColor p-2">
+<header class="fixed left-0 top-0 z-50 w-full border-b-2 border-b-accent bg-bgColour-default p-2">
 	<div
 		class="group flex w-full flex-row items-center justify-between align-middle"
 		id="main-header"
@@ -29,14 +29,14 @@ const mobileNavLinksClass =
 		</a>
 		<nav
 			aria-label="Main menu"
-			class={`absolute hidden flex-col items-end gap-y-4 rounded-md rounded-t-none bg-bgColor/[.85] py-4 shadow backdrop-blur ${mobileNavLinksClass} ${desktopNavLinksClass}`}
+			class={`absolute hidden flex-col items-end gap-y-4 rounded-md rounded-t-none bg-bgColour-default/[.85] py-4 shadow backdrop-blur ${mobileNavLinksClass} ${desktopNavLinksClass}`}
 			id="navigation-menu"
 		>
 			{
 				menuLinks.map((link) => (
 					<a
 						aria-current={url.pathname === link.path ? "page" : false}
-						class="hover:kwicherbelliaken-link px-4 py-4 underline-offset-2 sm:py-0 sm:hover:underline"
+						class="px-4 py-4 underline-offset-2 hover:kwicherbelliaken-link sm:py-0 sm:hover:underline"
 						data-astro-prefetch
 						href={link.path}
 					>
