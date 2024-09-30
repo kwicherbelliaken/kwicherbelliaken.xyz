@@ -42,6 +42,18 @@
 		--base-colour-neutral-800: 0deg 0% 20%;
 		--base-colour-neutral-900: 0deg 0% 12%;
 		--base-colour-neutral-950: 0deg 0% 8%;
+
+		--base-colour-blue-50: 249deg 87% 94%;
+		--base-colour-blue-100: 252deg 87% 91%;
+		--base-colour-blue-200: 251deg 87% 85%;
+		--base-colour-blue-300: 251deg 85% 79%;
+		--base-colour-blue-400: 251deg 86% 73%;
+		--base-colour-blue-500: 251deg 86% 66%;
+		--base-colour-blue-600: 251deg 86% 60%;
+		--base-colour-blue-700: 251deg 86% 54%;
+		--base-colour-blue-800: 251deg 86% 48%;
+		--base-colour-blue-900: 251deg 86% 42%;
+		--base-colour-blue-950: 251deg 86% 39%;
 	}
 
 	:root[data-theme="dark"] {
@@ -59,7 +71,7 @@
 	}
 
 	body {
-		@apply mx-auto flex min-h-screen max-w-3xl flex-col bg-bgColour-default px-8 pt-16 font-mono text-sm font-normal text-textColor antialiased;
+		@apply mx-auto flex min-h-screen max-w-3xl flex-col bg-bgColour-default px-8 pt-16 font-mono text-sm font-normal text-fgColour-default antialiased;
 	}
 
 	main {

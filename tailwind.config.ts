@@ -44,7 +44,6 @@ export default {
 				"accent-2": "hsl(var(--theme-accent-2) / <alpha-value>)",
 				link: "hsl(var(--theme-link) / <alpha-value>)",
 				quote: "hsl(var(--theme-quote) / <alpha-value>)",
-				textColor: "hsl(var(--theme-text) / <alpha-value>)",
 				...functionalColourTokens,
 			},
 			fontFamily: {
@@ -118,13 +117,13 @@ export default {
 				},
 				kwicherbelliaken: {
 					css: {
-						"--tw-prose-body": theme("colors.textColor / 1"),
-						"--tw-prose-bold": theme("colors.textColor / 1"),
-						"--tw-prose-bullets": theme("colors.textColor / 1"),
-						"--tw-prose-code": theme("colors.textColor / 1"),
+						"--tw-prose-body": theme("colors.fgColour-default / 1"),
+						"--tw-prose-bold": theme("colors.fgColour-default / 1"),
+						"--tw-prose-bullets": theme("colors.fgColour-default / 1"),
+						"--tw-prose-code": theme("colors.fgColour-default / 1"),
 						"--tw-prose-headings": theme("colors.accent-2 / 1"),
 						"--tw-prose-hr": "0.5px dashed #666",
-						"--tw-prose-links": theme("colors.textColor / 1"),
+						"--tw-prose-links": theme("colors.fgColour-default / 1"),
 						"--tw-prose-quotes": theme("colors.quote / 1"),
 						"--tw-prose-th-borders": "#666",
 					},
