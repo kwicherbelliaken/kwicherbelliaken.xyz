@@ -30,7 +30,7 @@ export default {
 			addComponents({
 				".kwicherbelliaken-link": {
 					"&:hover": {
-						"@apply decoration-2 decoration-accent text-accent": {},
+						"@apply decoration-2 decoration-fgColour-accent text-fgColour-accent": {},
 					},
 					"@apply underline underline-offset-2 text-link": {},
 				},
@@ -40,7 +40,7 @@ export default {
 	theme: {
 		extend: {
 			colors: {
-				accent: "hsl(var(--theme-accent) / <alpha-value>)",
+				accent: "hsl(var(--theme-fgColour-accent) / <alpha-value>)",
 				"accent-2": "hsl(var(--theme-accent-2) / <alpha-value>)",
 				link: "hsl(var(--theme-link) / <alpha-value>)",
 				quote: "hsl(var(--theme-quote) / <alpha-value>)",
