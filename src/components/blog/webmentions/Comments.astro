@@ -25,7 +25,7 @@ const comments = mentions.filter(
 {
 	!!comments.length && (
 		<div>
-			<p class="mb-0 text-accent-2">
+			<p class="mb-0">
 				<strong>{comments.length}</strong> Mention{comments.length > 1 ? "s" : ""}
 			</p>
 			<ul class="mt-0 divide-y divide-fgColour-default/20 ps-0" role="list">
@@ -60,7 +60,7 @@ const comments = mentions.filter(
 						) : null}
 						<div class="flex-auto">
 							<div class="flex items-center justify-between gap-x-2">
-								<p class="my-0 line-clamp-1 font-semibold text-accent-2">{mention.author?.name}</p>
+								<p class="my-0 line-clamp-1 font-semibold">{mention.author?.name}</p>
 								<a
 									aria-labelledby="cmt-source"
 									class="not-prose hover:text-link"
