@@ -15,7 +15,9 @@ const mobileNavLinksClass =
 	"top-[calc(100%+2px)] group-[.menu-open]:z-50 group-[.menu-open]:flex group-[.menu-open]:w-full group-[.menu-open]:left-0";
 ---
 
-<header class="fixed left-0 top-0 z-50 w-full border-b-2 border-b-accent bg-bgColour-default p-2">
+<header
+	class="fixed left-0 top-0 z-50 w-full border-b-2 border-b-fgColour-accent bg-bgColour-default p-2"
+>
 	<div
 		class="group flex w-full flex-row items-center justify-between align-middle"
 		id="main-header"
@@ -72,8 +74,8 @@ const mobileNavLinksClass =
 				</svg>
 				<svg
 					aria-hidden="true"
-					class="absolute start-1/2 top-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2 scale-0 text-accent opacity-0 transition-all group-aria-expanded:scale-100 group-aria-expanded:opacity-100"
-					class="text-accent"
+					class="absolute start-1/2 top-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2 scale-0 text-fgColour-accent opacity-0 transition-all group-aria-expanded:scale-100 group-aria-expanded:opacity-100"
+					class="text-fgColour-accent"
 					fill="none"
 					focusable="false"
 					id="cross-svg"
