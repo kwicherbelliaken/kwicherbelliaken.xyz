@@ -1,11 +1,11 @@
 ---
-title: "Oy! You don't need to mock synchronous dependencies"
+title: "Oy! You Don't Need to Mock Synchronous Dependencies"
 description: "Why testing real interactions makes mocking synchronous dependencies unnecessary."
 publishDate: "23 Aug 2024"
 tags: ["testing", "jest"]
 ---
 
-## Why you can spend more time on the toilet on your phone and less time unnecessarily mocking synchronous dependencies and looking up how to spell "unncecesarilly"
+## Why You Can Spend More Time on Your Phone and Less Time Mocking Synchronous Dependencies and Spelling "Unnecessarily"
 
 ![A good ole' toilet break leg branding.](./on-toilet.png)
 
@@ -48,7 +48,7 @@ describe("addDate", () => {
 
 Success. We have a test for **addDate**. We have reached coverage nirvana. Namaste. But did we need to mock **addDateMapper**? To answer this we'll need to answer the question, "why do we mock"?
 
-### Why do we mock?
+### Why Do We Mock?
 
 Unit testing involves focusing on [one element of the software at a time--hence the common term unit testing. The problem is that to make a single unit work, you often need other units](https://martinfowler.com/articles/mocksArentStubs.html#ChoosingBetweenTheDifferences "https://martinfowler.com/articles/mocksArentStubs.html#ChoosingBetweenTheDifferences").
 To accommodate for these other collaborating units, tests must make use of a _Test Double_--a generic term for any kind of pretend object used in place of a real object for testing purposes. We introduce Test Double's when the real object our test depends on is awkward to work with. A mock is an example of a Test Double.
@@ -57,7 +57,7 @@ We mock when using the real implementation of a dependency would overly complica
 
 So, back to our original question, _"Did we need to mock **addDateMapper**?"._ Well, is **addDateMapper** _"awkward to work with"_? Is it comparable to **fetch**? Nope. Not at all. We don't need to mock it.
 
-### No cap? We don't need to mock **addDateMapper**?
+### No Cap? We Don't Need to Mock **addDateMapper**?
 
 Bet. We don't need to mock it at all. Sounds like you finally have some time to confirm if the rumours about the French pole vaulter are [true](https://www.nbcnewyork.com/paris-2024-summer-olympics/french-pole-vaulter-video-anthony-ammirati-whats-next/5675990/).
 
@@ -86,7 +86,7 @@ Imagine if we fudged up the behavior of the **addDateMapper** mock, causing it t
 
 This leads me to a good rule of thumb.
 
-### Only mock asynchronous dependencies
+### ### Only Mock Asynchronous Dependencies
 
 What if we tweaked our **addDate** function so that it called some async function in addition to our existing workflow? Let's have this `asyncFuncion` take our mapped response and perform some asynchronous job with it and then return it as output.
 
@@ -167,18 +167,9 @@ First, the test has become tangled with mock implementations. Instead of zeroing
 
 Second, we’ve opened the door to what I’d call mocking _creep_. If addDate pulls in another dependency from **module-addDate-depends-on.ts**, we’d have to mock that too. It’s unnecessary. It clutters the test. The same goes for any constants in play. Mocking a constant? That’s a waste of time, plain and simple.
 
-%%
-// This is what I had before I got Gippity to reword it.
-
-One is how coupled this test has become to the mock implementations. Instead of our focus being on testing **addDate**, it's on establishing and verifying the mock behaviour of its collaborators **addDateMapper** and `asyncFunction`.
-
-Two is how we've exposed ourselves to a sort of mocking _creep_. What happens if
-**addDate** consumes another synchronous dependency from **module-addDate-depends-on.ts**? Well, we'd have to write code to mock it out as well. Code that is unnecessary. Code that adds noise to the test. The same is true for any constants that might be used. Surely we can agree that mocking a constant out is a poo time exercise.
-%%
-
 Thankfully we can avoid this nonsense entirely.
 
-### 🪖 Corporal Jest, use the real implementation
+### 🪖 Corporal Jest, Use The Real Implementation
 
 We can tell Jest to use the real implementation of our synchronous **addDateMapper** dependency. We do this by pulling in the real module with the requireActual API.
 
