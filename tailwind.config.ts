@@ -40,8 +40,6 @@ export default {
 	theme: {
 		extend: {
 			colors: {
-				accent: "hsl(var(--theme-fgColour-accent) / <alpha-value>)",
-				"accent-2": "hsl(var(--theme-accent-2) / <alpha-value>)",
 				link: "hsl(var(--theme-link) / <alpha-value>)",
 				quote: "hsl(var(--theme-quote) / <alpha-value>)",
 				...functionalColourTokens,
