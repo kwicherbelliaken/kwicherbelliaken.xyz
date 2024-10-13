@@ -9,7 +9,7 @@ const pseudoElementClass =
 	'before:bg-[url("../assets/kandy-korner.jpg")] before:bg-cover before:h-full before:w-full before:absolute before:top-0 before:left-0';
 
 const kwicherbelliakenPseudoElementClass =
-	"cursor-pointer after:content-[attr(data-hover)] hover:after:visible hover:after:opacity-100 after:text-8xl after:text-accent after:whitespace-nowrap after:transition-opacity after:duration-750 after:ease-in-out after:delay-75 after:invisible after:absolute ";
+	"cursor-pointer after:content-[attr(data-hover)] hover:after:visible hover:after:opacity-100 after:text-8xl after:text-fgColour-accent after:whitespace-nowrap after:transition-opacity after:duration-750 after:ease-in-out after:delay-75 after:invisible after:absolute ";
 
 const getPseudoElementClass = (explainer: "aching" | "belly" | "quit" | "yer") => {
 	if (explainer === "quit") {
@@ -62,7 +62,7 @@ const getPseudoElementClass = (explainer: "aching" | "belly" | "quit" | "yer") =
 
 			<GridBottom />
 		</div>
-		<figcaption class="mt-2 p-2 text-3xs italic leading-3 outline outline-accent">
+		<figcaption class="mt-2 p-2 text-3xs italic leading-3 outline outline-fgColour-accent">
 			That’s a dairy, New Zealand’s answer to a corner store, for kids what the boozer is for
 			grown-ups. I spent endless afternoons, days even, out front, working through two-dollar
 			mixtures, back when two dollars meant something and could get you pillowey bag of sweets.

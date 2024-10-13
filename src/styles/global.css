@@ -54,6 +54,20 @@
 		--base-colour-blue-800: 251deg 86% 48%;
 		--base-colour-blue-900: 251deg 86% 42%;
 		--base-colour-blue-950: 251deg 86% 39%;
+
+		--base-colour-red-50: 0deg 100% 95%;
+		--base-colour-red-100: 0deg 100% 93%;
+		--base-colour-red-200: 0deg 100% 88%;
+		--base-colour-red-300: 0deg 100% 83%;
+		--base-colour-red-400: 0deg 100% 78%;
+		--base-colour-red-500: 0deg 100% 73%;
+		--base-colour-red-600: 0deg 100% 68%;
+		--base-colour-red-700: 0deg 100% 63%;
+		--base-colour-red-800: 0deg 100% 58%;
+		--base-colour-red-900: 0deg 100% 53%;
+		--base-colour-red-950: 0deg 100% 50%;
+
+
 	}
 
 	:root[data-theme="dark"] {
