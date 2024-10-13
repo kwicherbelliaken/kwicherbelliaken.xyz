@@ -1,0 +1,32 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import { cva, type VariantProps } from "cva";
+
+const tag = cva(
+	"inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+	{
+		variants: {
+			variant: {
+				default: "text-fgColour-accent border-fgColour-accent shadow hover:text-fgColour-accent/60",
+			},
+			size: {
+				small: ["text-sm", "py-1", "px-2"],
+				medium: ["text-base", "py-2", "px-4"],
+			},
+		},
+		compoundVariants: [{ variant: "default", size: "medium", class: "uppercase" }],
+	}
+);
+
+export interface TagProps extends HTMLAttributes<"span">, VariantProps<typeof tag> {}
+
+/**
+ * For Astro components, we recommend setting your defaultVariants within
+ * Astro.props (which are `undefined` by default)
+ */
+const { variant = "default", size = "medium" } = Astro.props;
+---
+
+<span class={tag({ variant, size })}>
+	<slot />
+</span>
