@@ -7,14 +7,17 @@ const tag = cva(
 	{
 		variants: {
 			variant: {
-				default: "text-fgColour-accent border-fgColour-accent shadow hover:text-fgColour-accent/60",
+				primary:
+					"text-fgColour-default border-fgColour-default shadow hover:text-fgColour-default/60",
+				secondary: "text-fgColour-muted border-fgColour-muted shadow hover:text-fgColour-muted/60",
+				accent: "text-fgColour-accent border-fgColour-accent shadow hover:text-fgColour-accent/60",
 			},
 			size: {
 				small: ["text-sm", "py-1", "px-2"],
 				medium: ["text-base", "py-2", "px-4"],
 			},
 		},
-		compoundVariants: [{ variant: "default", size: "medium", class: "uppercase" }],
+		compoundVariants: [{ variant: "primary", size: "medium", class: "uppercase" }],
 	}
 );
 
@@ -24,7 +27,7 @@ export interface TagProps extends HTMLAttributes<"span">, VariantProps<typeof ta
  * For Astro components, we recommend setting your defaultVariants within
  * Astro.props (which are `undefined` by default)
  */
-const { variant = "default", size = "medium" } = Astro.props;
+const { variant = "primary", size = "medium" } = Astro.props;
 ---
 
 <span class={tag({ variant, size })}>
