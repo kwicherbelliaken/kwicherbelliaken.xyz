@@ -1,11 +1,17 @@
 ---
 import type { HTMLAttributes } from "astro/types";
+import type { ClassValue } from "clsx";
 
+import { clsx } from "clsx";
 import { type VariantProps, cva } from "cva";
 import { twMerge } from "tailwind-merge";
 
+function className(...inputs: ClassValue[]) {
+	return twMerge(clsx(inputs));
+}
+
 const tag = cva(
-	"text-red-500 inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+	"inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
 	{
 		compoundVariants: [{ class: "uppercase", size: "medium", variant: "primary" }],
 		variants: {
@@ -32,6 +38,6 @@ export interface TagProps extends HTMLAttributes<"span">, VariantProps<typeof ta
 const { size = "medium", variant = "primary" } = Astro.props;
 ---
 
-<span class={twMerge(tag({ size, variant }))}>
+<span class={className(tag({ size, variant }))}>
 	<slot />
 </span>
