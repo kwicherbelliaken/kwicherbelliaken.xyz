@@ -1,0 +1,43 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import type { ClassValue } from "clsx";
+
+import { clsx } from "clsx";
+import { type VariantProps, cva } from "cva";
+import { twMerge } from "tailwind-merge";
+
+function className(...inputs: ClassValue[]) {
+	return twMerge(clsx(inputs));
+}
+
+const tag = cva(
+	"inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+	{
+		compoundVariants: [{ class: "uppercase", size: "medium", variant: "primary" }],
+		variants: {
+			size: {
+				medium: ["text-base", "py-2", "px-4"],
+				small: ["text-sm", "py-1", "px-2"],
+			},
+			variant: {
+				accent: "text-fgColour-accent border-fgColour-accent shadow hover:text-fgColour-accent/60",
+				primary:
+					"text-fgColour-default border-fgColour-default shadow hover:text-fgColour-default/60",
+				secondary: "text-fgColour-muted border-fgColour-muted shadow hover:text-fgColour-muted/60",
+			},
+		},
+	}
+);
+
+export interface TagProps extends HTMLAttributes<"span">, VariantProps<typeof tag> {}
+
+/**
+ * For Astro components, we recommend setting your defaultVariants within
+ * Astro.props (which are `undefined` by default)
+ */
+const { size = "medium", variant = "primary" } = Astro.props;
+---
+
+<span class={className(tag({ size, variant }))}>
+	<slot />
+</span>

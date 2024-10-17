@@ -3,6 +3,7 @@ import type { GetStaticPaths, Page } from "astro";
 import type { CollectionEntry } from "astro:content";
 
 import Pagination from "@/components/Paginator.astro";
+import Tag from "@/components/Tag.astro";
 import PostPreview from "@/components/blog/PostPreview.astro";
 import { getAllPosts, getUniqueTags, groupPostsByYear, sortMDByDate } from "@/data/post";
 import PageLayout from "@/layouts/Base.astro";
@@ -91,13 +92,11 @@ const descYearKeys = Object.keys(groupedByYear).sort((a, b) => +b - +a);
 					<ul class="text-bgColor flex flex-wrap gap-2">
 						{uniqueTags.map((tag) => (
 							<li>
-								<a
-									aria-label={`View all posts with the tag: ${tag}`}
-									class="flex items-center justify-center rounded-lg bg-fgColour-accent p-1"
-									href={`/tags/${tag}/`}
-								>
-									{tag}
-								</a>
+								<Tag size="small" variant="accent">
+									<a aria-label={`View all posts with the tag: ${tag}`} href={`/tags/${tag}/`}>
+										{tag}
+									</a>
+								</Tag>
 							</li>
 						))}
 					</ul>
