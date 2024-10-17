@@ -284,7 +284,7 @@ export default function Button(props) {
 
 Both utilities share something with `cva`: they make styling components easier. But where `cva` handles broad, variant-based styling, these utilities shine in handling the _state_ and _interactive_ styles of a component. We can think of _state styles_ as those applied in response to a state change in the component, like a loading state triggered off some asynchronous request. While _interactive styles_ are those native to an element like whether it is pressed or disabled.
 
-Interestingly, in the context of TailwindCSS, I don’t think either utility is as useful as advertised. This is something I explain further in [[Why Utilities Like Classnames & CLSX Might Not Be Necessary]].
+Interestingly, in the context of TailwindCSS, I don’t think either utility is as useful as advertised. This is something I explain further in [Why Conditional Class Utilities Might Not Be Necessary](/posts/why-conditional-style-utilities-might-not-be-needed).
 
 Even with the example above, we don’t need a class to handle `isPressed` for the active state. Browsers handle this for free, as it’s part of an element’s natural interactive state.
 
