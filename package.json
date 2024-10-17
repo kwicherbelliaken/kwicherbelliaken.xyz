@@ -27,7 +27,7 @@
 		"satori-html": "^0.3.2",
 		"sharp": "^0.33.2",
 		"tailwind-merge": "^2.5.3",
-		"typescript": "^5.5.3"
+		"typescript": "^5.6.3"
 	},
 	"devDependencies": {
 		"@astrojs/check": "^0.5.10",
@@ -65,6 +65,6 @@
 		"remark-unwrap-images": "^4.0.0",
 		"sst": "^2.43.4",
 		"tailwindcss": "^3.4.3",
-		"typescript": "^5.4.4"
+		"typescript": "^5.6.3"
 	}
 }
