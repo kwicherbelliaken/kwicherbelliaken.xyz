@@ -1,8 +1,8 @@
 ---
 title: "Using Async Utilities Whenever a Components State Updates"
-description: "Long renders can delay elements appearing in the DOM."
+description: "Local state updates are asynchronous. Re-renders can delay elements appearing in the DOM."
 publishDate: 24 Oct 2024
-updatedDate: 26 Oct 2024
+updatedDate: 31 Oct 2024
 tags: ["react", "jest", "testing", "react testing library"]
 ---
 
@@ -16,16 +16,14 @@ I thought that the outcome of state updates could be asserted synchronously.
 
 ```javascript title="Component.jsx"
 const Component = () => {
-	const [isRendered, setIsRendered] = useState(false);
+	const [isClicked, setIsClicked] = useState(false);
 
 	const handleClick = () => {
-		setIsRendered(true);
+		setIsClicked(true);
 	};
 
 	return (
-		<button onClick={handleClick}>
-			{isRendered ? <div>I am rendered</div> : <div>I am not rendered, click me</div>}
-		</button>
+		<button onClick={handleClick}>{isClicked ? <div>clicked</div> : <div>not clicked</div>}</button>
 	);
 };
 ```
@@ -36,26 +34,26 @@ Testing that the text content of the button changes on click.
 test("shows new text when button is clicked", async () => {
 	render(<Component />);
 
-	const buttonToClick = screen.getByRole("button", { name: /Not rendered, click me/i });
+	const buttonToClick = screen.getByRole("button", { name: /not clicked/i });
 
 	expect(buttonToClick).toBeVisible();
 
 	user.click(buttonToClick);
 
-	expect(screen.getByRole("button", { name: /I am rendered/i })).toBeVisible();
+	expect(screen.getByRole("button", { name: /clicked/i })).toBeVisible();
 });
 ```
 
 I would expect this test to be successful. But it fails.
 
 ```cli
-TestingLibraryElementError: Unable to find an element with the text: I am rendered.
+TestingLibraryElementError: Unable to find an element with the text: clicked.
 ```
 
 It fails because we are not waiting for the Component to process its state change and update. Updating the test to use an asynchronous query solves this.
 
 ```javascript title="Component.test.jsx"
-expect(await screen.findByRole("button", { name: /I am rendered/i })).toBeVisible();
+expect(await screen.findByRole("button", { name: /clicked/i })).toBeVisible();
 ```
 
 For a long time I thought that async queries were only for obvious asynchronous operations--network calls or timeouts, things like that. I thought that state updates were handled differently, that you could assert on their outcome as though they were synchronous. I thought this because of two reasons.
@@ -81,6 +79,4 @@ I didn’t think async queries were necessary when checking the DOM after a loca
 >
 > [Example](https://testing-library.com/docs/react-testing-library/example-intro/#act)
 
-I suppose we need to remember that `setState` is asynchronous and that a render can delay elements from showing in the DOM. Most of the time, the time taken for a component to (re)render is negligible. However an expensive (re)render takes time and affects the appearance/disappearance of elements just the same as any other asynchronous operation.
-
-I explain a rule to only need a single async check per expected delay in [[Use One Async Query Per Expected Delay]].
+I suppose we need to remember that `setState` is asynchronous and that a render can delay elements from showing in the DOM. A re-render takes time and affects the appearance/disappearance of elements just the same as any other asynchronous operation.
