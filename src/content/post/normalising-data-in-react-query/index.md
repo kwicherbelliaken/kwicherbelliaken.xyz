@@ -1,6 +1,6 @@
 ---
 title: "Normalising Data in React Query"
-description: "How to normalise the React Query cacheaaaaaaaaaaaaaaaaa."
+description: "An approach to normalising data in the React Query cache."
 publishDate: "05 Nov 2024"
 updatedDate: "15 Nov 2024"
 tags: ["react query"]
