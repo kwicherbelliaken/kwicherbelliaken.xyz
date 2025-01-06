@@ -1,7 +1,7 @@
 ---
 title: "Responsive Images Using Attributes src & srcSet"
 description: "Learn how to implement responsive images using srcSet and sizes attributes to optimize image loading across different devices and screen resolutions."
-publishDate: 2024-01-09
+publishDate: 2025-01-09
 tags: ["responsive design"]
 draft: false
 ---
@@ -120,7 +120,6 @@ Let's say our device has a 1X display. To determine the image density of each im
 Browsers then compare the image density of the available sources against the devices own DPR. Firefox and Safari pick the source with a higher density than the device's DPR—in this case, the `medium.jpg` variant as 1.78x is greater than 1x. Chrome takes a little different an approach. In doing so, the browser chooses an image larger than the layout demands, ensuring it delivers sharper details the device can display. Furthermore, for 2x displays, Firefox and Safari will load `large.jpg` since it's the only source with a density higher than 2x.
 
 It it worth noting that Imgix is a fantastic service that simplifies the use of responsive images through srcSet and sizes attributes. For details on caching Imgix responses for offline image support, see [[Images for Offline Use]].
-
 
 [^1]: An important note: In many examples, resizing the browser viewport triggers responsive image loading. Scaling up the viewport prompts requests for larger images, while scaling down triggers requests for smaller ones. In Chrome, this behaviour is only observed when scaling the viewport up. [In scaling down, Chrome already has a higher resolution image in its cache and therefore does not substitute a lesser image for it](https://youtu.be/2QYpkrX2N48?t=1000). There is no point for it to request a lesser quality image. This would be a waste of bandwidth. The behaviour remains unchanged if you disable the cache. [This is a native Chrome feature where it will always decode the largest cached image because it is of the best quality](https://github.com/aFarkas/lazysizes/issues/133#issuecomment-126904028).
 
