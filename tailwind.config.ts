@@ -80,6 +80,11 @@ export default {
 						hr: {
 							borderTopStyle: "dashed",
 						},
+						p: {
+							"@apply font-charterRegular": "",
+
+							lineHeight: "1.6",
+						},
 						strong: {
 							fontWeight: "700",
 						},
@@ -124,6 +129,9 @@ export default {
 						"--tw-prose-links": theme("colors.fgColour-default / 1"),
 						"--tw-prose-quotes": theme("colors.quote / 1"),
 						"--tw-prose-th-borders": "#666",
+
+						lineHeight: "1.6",
+						maxWidth: "none",
 					},
 				},
 				sm: {
