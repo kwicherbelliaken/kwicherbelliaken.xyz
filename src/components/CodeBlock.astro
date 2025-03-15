@@ -1,0 +1,49 @@
+---
+import type { PluginFramesProps } from "astro-expressive-code";
+import { Code } from "astro-expressive-code/components";
+
+interface Props {
+	/**
+	 * @desc Markdoc places the fence content in the `content` property.
+	 * @example: `\r\n## Heading\r\n`
+	 */
+	content: string;
+	/**
+	 * @desc Markdoc places the parsed fence language in the `language` property.
+	 * @example: `typescript`
+	 */
+	language?: string;
+	/**
+	 * @desc title is a custom Markdoc schema addition to pass a title to the code fence.
+	 * @summary `title` is not required.
+	 * If using Expressive Code's commented file name, it will populate that.
+	 * If both are specified, it will follow Expressive Code's default behavior.
+	 */
+	title?: string;
+	/**
+	 * @desc Custom Markdoc schema addition to specify the Expressive Code frame type
+	 * @summary `frame` is not required, and if not specified, defaults to `auto`.
+	 * @example
+	 * ```javascript {\% frame="none" %}
+	 *     var foo = "a";
+	 * ``` will set the frame to none.
+	 */
+	frame?: PluginFramesProps["frame"];
+
+	meta?: string;
+	collapse?: string;
+	showLineNumbers?: boolean;
+	startLineNumber?: number;
+}
+
+const { content, language, meta, collapse, showLineNumbers, startLineNumber } = Astro.props;
+---
+
+<Code
+	code={content}
+	lang={language}
+	meta={meta}
+	collapse={collapse}
+	showLineNumbers={showLineNumbers}
+	startLineNumber={startLineNumber}
+/>
