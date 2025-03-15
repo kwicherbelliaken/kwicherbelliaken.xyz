@@ -75,14 +75,15 @@ export default {
 							borderRadius: "2px",
 						},
 						h2: {
-							"@apply font-charterRegular": "",
+							fontSize: "clamp(1.15rem,2vw,1.25rem)",
+							fontWeight: "700",
+							lineHeight: "1.1em",
 						},
 						hr: {
 							borderTopStyle: "dashed",
 						},
 						p: {
 							"@apply font-charterRegular": "",
-
 							lineHeight: "1.6",
 						},
 						strong: {
@@ -130,8 +131,9 @@ export default {
 						"--tw-prose-quotes": theme("colors.quote / 1"),
 						"--tw-prose-th-borders": "#666",
 
-						lineHeight: "1.6",
-						maxWidth: "none",
+						h2: {
+							"@apply mb-0 text-2xl": "",
+						},
 					},
 				},
 				sm: {

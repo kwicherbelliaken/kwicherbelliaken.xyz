@@ -93,7 +93,7 @@
 	}
 
 	h2 {
-		@apply pb-6 font-afterAllRegular text-2xl font-bold tracking-wide md:text-4xl;
+		@apply mb-0 pb-6 font-charterRegular text-2xl font-bold  tracking-wide md:text-4xl;
 	}
 
 	p {
