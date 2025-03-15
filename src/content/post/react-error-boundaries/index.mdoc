@@ -75,8 +75,11 @@ It's a design decision made by React and it makes sense. React is concerned with
 
 A good explanation for why React does not catch errors emitted from event handlers can be seen below. Furthermore, it makes more sense to handle these errors in the context, the component, they occur in instead of bubbling beyond this scope.
 
-![Design decision explanation from React team](./react-error-boundary-design-decision.png)
-[Why are Error Boundaries not triggered for event handlers](https://github.com/facebook/react/issues/11409#issuecomment-340859253)
+{% image
+  src="./react-error-boundary-design-decision.png"
+  alt="Design decision explanation from React team"
+  caption="Why are Error Boundaries not triggered for event handlers (Source: github.com/facebook/react/issues/11409#issuecomment-340859253)"
+/%}
 
 ## Sounds Worrying. Is It Really Such a Big Deal?
 
@@ -86,8 +89,11 @@ Not really. For event listeners, errors should be handled locally, not bubbled u
 
 1. **Binding the Error to the Component Tree**
 
-![Workaround for handling async errors in React components](./react-error-boundary-workaround.png)
-[Why are Error Boundaries not triggered for event handlers](https://github.com/facebook/react/issues/11409#issuecomment-783309449)
+{% image
+  src="./react-error-boundary-workaround.png"
+  alt="Workaround for handling async errors in React components"
+  caption="Why are Error Boundaries not triggered for event handlers (Source: github.com/facebook/react/issues/11409#issuecomment-783309449)"
+/%}
 
 This obviously requires a bit of a _hack_. [We are forcing the asynchronous error into the React render phase using a hammer](https://medium.com/trabe/catching-asynchronous-errors-in-react-using-error-boundaries-5e8a5fd7b971).
 
