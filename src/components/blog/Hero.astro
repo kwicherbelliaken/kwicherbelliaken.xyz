@@ -37,6 +37,9 @@ const dateTimeOptions: Intl.DateTimeFormatOptions = {
 <h1 class="mb-3 sm:mb-1">
 	{data.title}
 </h1>
+<p class="pb-6 font-normal text-fgColour-muted">
+	{data.description}
+</p>
 <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
 	<p class="font-semibold">
 		<FormattedDate date={data.publishDate} dateTimeOptions={dateTimeOptions} /> /{" "}
