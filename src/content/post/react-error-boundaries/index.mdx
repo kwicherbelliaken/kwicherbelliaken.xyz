@@ -12,7 +12,11 @@ import workaround from "./react-error-boundary-workaround.png";
 
 export const CaptionedImage = ({ src, alt, caption }) => (
 	<figure>
-		<Image src={src} alt={alt} />
+		<Image
+			src={src}
+			alt={alt}
+			style="border-radius: 0.5rem; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);"
+		/>
 		<figcaption>{caption}</figcaption>
 	</figure>
 );
