@@ -23,7 +23,7 @@ Turns out I don't know how error boundaries work in React Router or React, for t
 
 The `errorElement` defined on a route only catches errors thrown in loaders, actions, or **during component rendering**. What do we mean by **component rendering**? We mean the render and lifecycle methods that describe the render and commit phase of React. Errors in these phases, seen below, will be caught by an error boundary.
 
-```javascript
+```javascript showLineNumbers
 function TestRoute() {
 	throw new Error("Uhhh ohh");
 	return <div>Test Route</div>;
@@ -46,7 +46,7 @@ However, errors that do not occur during component rendering aren't handled by e
 
    The limitation is described in the official, though out-of-date, [documentation](https://legacy.reactjs.org/docs/error-boundaries.html#how-about-event-handlers).
 
-```javascript
+```javascript showLineNumbers
 function TestRoute() {
   useEffect(() => {
 	  async function onMount() {
@@ -64,7 +64,7 @@ function TestRoute() {
 
    The limitation is described in the official, though out-of-date, [documentation](https://legacy.reactjs.org/docs/error-boundaries.html#how-about-event-handlers).
 
-```javascript
+```javascript showLineNumbers
 function TestRoute() {
 	return (
 		<div
@@ -106,7 +106,7 @@ Not really. For event listeners, errors should be handled locally, not bubbled u
 
 This obviously requires a bit of a _hack_. [We are forcing the asynchronous error into the React render phase using a hammer](https://medium.com/trabe/catching-asynchronous-errors-in-react-using-error-boundaries-5e8a5fd7b971).
 
-```javascript
+```javascript showLineNumbers
 function useAsyncError() {
 	const [_, setError] = useState();
 
@@ -140,7 +140,7 @@ function TestRoute() {
 
 We could update the global error boundary to [catch unhandled promise rejections](https://eddiewould.com/2021/28/28/handling-rejected-promises-error-boundary-react/).
 
-```javascript
+```javascript showLineNumbers
 class ErrorBoundary {
     private promiseRejectionHandler = (event) => {
         this.setState({
@@ -157,6 +157,7 @@ class ErrorBoundary {
     componentDidMount() {
         window.addEventListener('unhandledrejection', this.promiseRejectionHandler)
     }
+}
 ```
 
 I prefer not to. While it would handle both synchronous and asynchronous errors, it gives you less control by using a broad approach. Using a global error handler can work in simple applications, but it can cause issues in more complex scenarios:

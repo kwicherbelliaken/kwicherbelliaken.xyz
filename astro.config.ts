@@ -1,8 +1,9 @@
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import tailwind from "@astrojs/tailwind";
+import { pluginLineNumbers } from "@expressive-code/plugin-line-numbers";
 import { defineConfig } from "astro/config";
-import expressiveCode from "astro-expressive-code";
+import expressiveCode, { type ExpressiveCodePlugin } from "astro-expressive-code";
 import icon from "astro-icon";
 import aws from "astro-sst";
 import fs from "fs";
@@ -19,7 +20,10 @@ export default defineConfig({
 		domains: ["webmention.io"],
 	},
 	integrations: [
-		expressiveCode(expressiveCodeOptions),
+		expressiveCode({
+			plugins: [pluginLineNumbers() as ExpressiveCodePlugin],
+			...expressiveCodeOptions,
+		}),
 		icon(),
 		tailwind({
 			applyBaseStyles: false,
