@@ -6,6 +6,17 @@ updatedDate: 07 March 2025
 tags: ["react", "error-handling"]
 ---
 
+import { Image } from "astro:assets";
+import designDecision from "./react-error-boundary-design-decision.png";
+import workaround from "./react-error-boundary-workaround.png";
+
+export const CaptionedImage = ({ src, alt, caption }) => (
+	<figure>
+		<Image src={src} alt={alt} />
+		<figcaption>{caption}</figcaption>
+	</figure>
+);
+
 ## Errors Are Like Socks in the Laundry – They Mysteriously Disappear
 
 Turns out I don't know how error boundaries work in React Router or React, for that matter.
@@ -73,11 +84,11 @@ It's a design decision made by React and it makes sense. React is concerned with
 
 A good explanation for why React does not catch errors emitted from event handlers can be seen below. Furthermore, it makes more sense to handle these errors in the context, the component, they occur in instead of bubbling beyond this scope.
 
-{% image
-  src="./react-error-boundary-design-decision.png"
-  alt="Design decision explanation from React team"
-  caption="Why are Error Boundaries not triggered for event handlers (Source: github.com/facebook/react/issues/11409#issuecomment-340859253)"
-/%}
+<CaptionedImage
+	src={designDecision}
+	alt="Design decision explanation from React team"
+	caption="Why are Error Boundaries not triggered for event handlers (Source: github.com/facebook/react/issues/11409#issuecomment-340859253)"
+/>
 
 ## Sounds Worrying. Is It Really Such a Big Deal?
 
@@ -87,11 +98,11 @@ Not really. For event listeners, errors should be handled locally, not bubbled u
 
 1. **Binding the Error to the Component Tree**
 
-{% image
-  src="./react-error-boundary-workaround.png"
-  alt="Workaround for handling async errors in React components"
-  caption="Why are Error Boundaries not triggered for event handlers (Source: github.com/facebook/react/issues/11409#issuecomment-783309449)"
-/%}
+<CaptionedImage
+	src={workaround}
+	alt="Workaround for handling async errors in React components"
+	caption="Why are Error Boundaries not triggered for event handlers (Source: github.com/facebook/react/issues/11409#issuecomment-783309449)"
+/>
 
 This obviously requires a bit of a _hack_. [We are forcing the asynchronous error into the React render phase using a hammer](https://medium.com/trabe/catching-asynchronous-errors-in-react-using-error-boundaries-5e8a5fd7b971).
 

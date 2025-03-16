@@ -1,4 +1,3 @@
-import markdoc from "@astrojs/markdoc";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import tailwind from "@astrojs/tailwind";
@@ -20,14 +19,13 @@ export default defineConfig({
 		domains: ["webmention.io"],
 	},
 	integrations: [
-		expressiveCode(),
+		expressiveCode(expressiveCodeOptions),
 		icon(),
 		tailwind({
 			applyBaseStyles: false,
 		}),
 		sitemap(),
 		mdx(),
-		markdoc(),
 	],
 	markdown: {
 		rehypePlugins: [
