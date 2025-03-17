@@ -6,20 +6,9 @@ updatedDate: 07 March 2025
 tags: ["react", "error-handling"]
 ---
 
-import { Image } from "astro:assets";
+import CaptionedImage from '../../../components/CaptionedImage.astro';
 import designDecision from "./react-error-boundary-design-decision.png";
 import workaround from "./react-error-boundary-workaround.png";
-
-export const CaptionedImage = ({ src, alt, caption }) => (
-	<figure>
-		<Image
-			src={src}
-			alt={alt}
-			style="border-radius: 0.5rem; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);"
-		/>
-		<figcaption>{caption}</figcaption>
-	</figure>
-);
 
 ## Errors Are Like Socks in the Laundry – They Mysteriously Disappear
 
