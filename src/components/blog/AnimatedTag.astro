@@ -34,7 +34,7 @@ const { tags } = Astro.props;
 			tags.map((tag, index) => (
 				<div
 					class={`
-              font-medium transition-all duration-500 ease-in-out
+              text-3xs font-normal transition-all duration-500 ease-in-out sm:text-xs
               md:translate-x-[-15px] md:scale-95 md:opacity-0 md:blur-[4px]
               md:group-hover:translate-x-0 md:group-hover:scale-100 md:group-hover:opacity-100 md:group-hover:blur-none
             `}
@@ -43,16 +43,14 @@ const { tags } = Astro.props;
 						aria-label={`View more blogs with the tag ${tag}`}
 						href={`/tags/${tag}/`}
 						data-pagefind-filter="tag"
-						class={`
-              kwicherbelliaken-link
-            `}
+						class="kwicherbelliaken-link"
 						style={{
 							transitionDelay: `${(index + 1) * 80}ms`,
 						}}
 					>
-						{tag}
+						{tag.trim()}
 					</a>
-					{index < tags.length - 1 && <span class="ml-2 text-gray-500">·</span>}
+					{index < tags.length - 1 && <span class="ml-2 text-fgColour-muted/60">·</span>}
 				</div>
 			))
 		}
