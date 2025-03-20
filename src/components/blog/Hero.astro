@@ -45,7 +45,7 @@ const dateTimeOptions: Intl.DateTimeFormatOptions = {
 <hr class="my-4 border-t border-fgColour-muted/10" />
 
 <div
-	class="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 pb-4 text-3xs sm:text-xs font-normal text-fgColour-muted/60"
+	class="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 text-3xs font-normal text-fgColour-muted/60 sm:text-xs"
 >
 	<p>
 		<FormattedDate date={data.publishDate} dateTimeOptions={dateTimeOptions} /> ·{" "}
@@ -59,5 +59,6 @@ const dateTimeOptions: Intl.DateTimeFormatOptions = {
 			</p>
 		)
 	}
+	<AnimatedTag tags={data.tags} />
 </div>
-<AnimatedTag tags={data.tags} />
+<hr class="my-4 border-t border-fgColour-muted/10" />
