@@ -78,6 +78,13 @@
 		--theme-quote: 102deg 100% 86%;
 	}
 
+	/**
+	 * Scroll margin is used to ensure that the element is not hidden behind the header.
+	 */
+	.header-scroll-margin {
+		@apply snap-start scroll-mt-16 md:scroll-mt-20;
+	}
+
 	html {
 		@apply relative scroll-smooth;
 	}
@@ -91,11 +98,15 @@
 	}
 
 	h1 {
-		@apply pb-6 font-afterAllRegular text-4xl font-bold tracking-wide md:text-6xl;
+		@apply header-scroll-margin pb-6 font-afterAllRegular text-4xl font-bold tracking-wide md:text-6xl;
 	}
 
 	h2 {
-		@apply mb-0 pb-6 font-charterRegular text-2xl font-bold  tracking-wide md:text-4xl;
+		@apply header-scroll-margin mb-0 pb-6 font-charterRegular text-2xl font-bold tracking-wide md:text-4xl;
+	}
+
+	h3 {
+		@apply header-scroll-margin font-charterRegular text-xl font-bold tracking-wide md:text-2xl;
 	}
 
 	p {
