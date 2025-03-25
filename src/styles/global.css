@@ -79,14 +79,10 @@
 	}
 
 	/**
-	 * Scroll margin is used to ensure that the element is not hidden behind the header.
-	 */
-	.header-scroll-margin {
-		@apply snap-start scroll-mt-16 md:scroll-mt-20;
-	}
-
+   * Scroll margin is used to ensure that the element is not hidden behind the header.
+   */
 	html {
-		@apply relative scroll-smooth;
+		@apply relative scroll-pt-16 scroll-smooth md:scroll-pt-20;
 	}
 
 	body {
@@ -98,15 +94,15 @@
 	}
 
 	h1 {
-		@apply header-scroll-margin pb-6 font-afterAllRegular text-4xl font-bold tracking-wide md:text-6xl;
+		@apply pb-6 font-afterAllRegular text-4xl font-bold tracking-wide md:text-6xl;
 	}
 
 	h2 {
-		@apply header-scroll-margin mb-0 pb-6 font-charterRegular text-2xl font-bold tracking-wide md:text-4xl;
+		@apply mb-0 pb-6 font-charterRegular text-2xl font-bold tracking-wide md:text-4xl;
 	}
 
 	h3 {
-		@apply header-scroll-margin font-charterRegular text-xl font-bold tracking-wide md:text-2xl;
+		@apply font-charterRegular text-xl font-bold tracking-wide md:text-2xl;
 	}
 
 	p {
