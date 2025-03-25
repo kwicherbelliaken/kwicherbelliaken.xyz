@@ -6,20 +6,22 @@ updatedDate: 07 March 2025
 tags: ["react", "error-handling"]
 ---
 
+import CaptionedImage from '../../../components/CaptionedImage.astro';
+import designDecision from "./react-error-boundary-design-decision.png";
+import workaround from "./react-error-boundary-workaround.png";
+
 ## Errors Are Like Socks in the Laundry – They Mysteriously Disappear
 
 Turns out I don't know how error boundaries work in React Router or React, for that matter.
 
 The `errorElement` defined on a route only catches errors thrown in loaders, actions, or **during component rendering**. What do we mean by **component rendering**? We mean the render and lifecycle methods that describe the render and commit phase of React. Errors in these phases, seen below, will be caught by an error boundary.
 
-```javascript
+```javascript showLineNumbers
 function TestRoute() {
 	throw new Error("Uhhh ohh");
 	return <div>Test Route</div>;
 }
 ```
-
-<br/>
 
 ```javascript
 function TestRoute() {
@@ -37,7 +39,7 @@ However, errors that do not occur during component rendering aren't handled by e
 
    The limitation is described in the official, though out-of-date, [documentation](https://legacy.reactjs.org/docs/error-boundaries.html#how-about-event-handlers).
 
-```javascript
+```javascript showLineNumbers
 function TestRoute() {
   useEffect(() => {
 	  async function onMount() {
@@ -55,7 +57,7 @@ function TestRoute() {
 
    The limitation is described in the official, though out-of-date, [documentation](https://legacy.reactjs.org/docs/error-boundaries.html#how-about-event-handlers).
 
-```javascript
+```javascript showLineNumbers
 function TestRoute() {
 	return (
 		<div
@@ -75,8 +77,11 @@ It's a design decision made by React and it makes sense. React is concerned with
 
 A good explanation for why React does not catch errors emitted from event handlers can be seen below. Furthermore, it makes more sense to handle these errors in the context, the component, they occur in instead of bubbling beyond this scope.
 
-![Design decision explanation from React team](./react-error-boundary-design-decision.png)
-[Why are Error Boundaries not triggered for event handlers](https://github.com/facebook/react/issues/11409#issuecomment-340859253)
+<CaptionedImage
+	src={designDecision}
+	alt="Design decision explanation from React team"
+	caption="Why are Error Boundaries not triggered for event handlers (Source: github.com/facebook/react/issues/11409#issuecomment-340859253)"
+/>
 
 ## Sounds Worrying. Is It Really Such a Big Deal?
 
@@ -86,12 +91,15 @@ Not really. For event listeners, errors should be handled locally, not bubbled u
 
 1. **Binding the Error to the Component Tree**
 
-![Workaround for handling async errors in React components](./react-error-boundary-workaround.png)
-[Why are Error Boundaries not triggered for event handlers](https://github.com/facebook/react/issues/11409#issuecomment-783309449)
+<CaptionedImage
+	src={workaround}
+	alt="Workaround for handling async errors in React components"
+	caption="Why are Error Boundaries not triggered for event handlers (Source: github.com/facebook/react/issues/11409#issuecomment-783309449)"
+/>
 
 This obviously requires a bit of a _hack_. [We are forcing the asynchronous error into the React render phase using a hammer](https://medium.com/trabe/catching-asynchronous-errors-in-react-using-error-boundaries-5e8a5fd7b971).
 
-```javascript
+```javascript showLineNumbers
 function useAsyncError() {
 	const [_, setError] = useState();
 
@@ -125,7 +133,7 @@ function TestRoute() {
 
 We could update the global error boundary to [catch unhandled promise rejections](https://eddiewould.com/2021/28/28/handling-rejected-promises-error-boundary-react/).
 
-```javascript
+```javascript showLineNumbers
 class ErrorBoundary {
     private promiseRejectionHandler = (event) => {
         this.setState({
@@ -142,6 +150,7 @@ class ErrorBoundary {
     componentDidMount() {
         window.addEventListener('unhandledrejection', this.promiseRejectionHandler)
     }
+}
 ```
 
 I prefer not to. While it would handle both synchronous and asynchronous errors, it gives you less control by using a broad approach. Using a global error handler can work in simple applications, but it can cause issues in more complex scenarios:

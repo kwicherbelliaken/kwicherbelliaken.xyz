@@ -53,6 +53,6 @@ export const functionalColourTokens = {
 	["bgColour-default"]: baseColourTokens.neutral["50"],
 	["bgColour-muted"]: baseColourTokens.neutral["100"],
 	["fgColour-accent"]: baseColourTokens.red["950"],
-	["fgColour-default"]: baseColourTokens.blue["950"],
-	["fgColour-muted"]: baseColourTokens.blue["800"],
+	["fgColour-default"]: baseColourTokens.neutral["950"],
+	["fgColour-muted"]: baseColourTokens.neutral["800"],
 };

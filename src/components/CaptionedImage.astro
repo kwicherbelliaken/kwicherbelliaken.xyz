@@ -1,0 +1,35 @@
+---
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+
+type Props = {
+	alt: string;
+	caption: string;
+	src: ImageMetadata;
+};
+
+const { alt, caption, src } = Astro.props;
+---
+
+<figure class="rounded-xl p-2 ring-1 ring-inset ring-gray-900/10">
+	<Image
+		{alt}
+		{src}
+		class:list={[
+			"rounded-xl",
+			"shadow-md",
+			"ring-1",
+			"ring-gray-900/10",
+			"bg-gray-900/2.5",
+			"p-2",
+			"ring-inset",
+		]}
+	/>
+	<figcaption class="break-all px-2">{caption}</figcaption>
+</figure>
+
+<style>
+	figcaption {
+		font-size: clamp(0.75rem, 2vw, 0.5rem);
+	}
+</style>

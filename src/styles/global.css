@@ -1,3 +1,5 @@
+@import "./expressive-code.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -24,49 +26,47 @@
 		color-scheme: light;
 		/* https://tailwindcss.com/docs/customizing-colors#using-css-variables */
 		--theme-bg-default: 0deg 0% 81%;
-		--theme-link: 251deg 86% 39%;
+		--theme-link: 223deg 77% 45%;
 		/* --theme-text: 203deg 11% 15%; */
 		--theme-text: 251deg 86% 39%;
 		--theme-accent: 0deg 100% 50%;
-		--theme-quote: 351deg 66% 48%;
+		--theme-quote: 335deg 80% 72%;
 
-		--base-colour-neutral-50: 0deg 0% 81%;
-		--base-colour-neutral-100: 0deg 0% 77%;
-		--base-colour-neutral-200: 0deg, 0%, 69%;
-		--base-colour-neutral-300: 0deg, 0%, 61%;
-		--base-colour-neutral-400: 0deg 0% 53%;
-		--base-colour-neutral-500: 0deg 0% 45%;
-		--base-colour-neutral-600: 0deg 0% 37%;
-		--base-colour-neutral-700: 0deg 0% 28%;
-		--base-colour-neutral-800: 0deg 0% 20%;
-		--base-colour-neutral-900: 0deg 0% 12%;
-		--base-colour-neutral-950: 0deg 0% 8%;
+		--base-colour-neutral-50: 0deg 0% 100%;
+		--base-colour-neutral-100: 0deg 0% 95%;
+		--base-colour-neutral-200: 0deg 0% 85%;
+		--base-colour-neutral-300: 0deg 0% 75%;
+		--base-colour-neutral-400: 0deg 0% 65%;
+		--base-colour-neutral-500: 0deg 0% 55%;
+		--base-colour-neutral-600: 0deg 0% 45%;
+		--base-colour-neutral-700: 0deg 0% 35%;
+		--base-colour-neutral-800: 0deg 0% 25%;
+		--base-colour-neutral-900: 0deg 0% 15%;
+		--base-colour-neutral-950: 0deg 0% 10%;
 
-		--base-colour-blue-50: 249deg 87% 94%;
-		--base-colour-blue-100: 252deg 87% 91%;
-		--base-colour-blue-200: 251deg 87% 85%;
-		--base-colour-blue-300: 251deg 85% 79%;
-		--base-colour-blue-400: 251deg 86% 73%;
-		--base-colour-blue-500: 251deg 86% 66%;
-		--base-colour-blue-600: 251deg 86% 60%;
-		--base-colour-blue-700: 251deg 86% 54%;
-		--base-colour-blue-800: 251deg 86% 48%;
-		--base-colour-blue-900: 251deg 86% 42%;
-		--base-colour-blue-950: 251deg 86% 39%;
+		--base-colour-blue-50: 223deg 89% 95%;
+		--base-colour-blue-100: 223deg 87% 92%;
+		--base-colour-blue-200: 223deg 86% 86%;
+		--base-colour-blue-300: 223deg 84% 81%;
+		--base-colour-blue-400: 223deg 82% 75%;
+		--base-colour-blue-500: 223deg 81% 70%;
+		--base-colour-blue-600: 223deg 81% 64%;
+		--base-colour-blue-700: 223deg 81% 59%;
+		--base-colour-blue-800: 223deg 81% 53%;
+		--base-colour-blue-900: 223deg 77% 48%;
+		--base-colour-blue-950: 223deg 77% 45%;
 
-		--base-colour-red-50: 0deg 100% 95%;
-		--base-colour-red-100: 0deg 100% 93%;
-		--base-colour-red-200: 0deg 100% 88%;
-		--base-colour-red-300: 0deg 100% 83%;
-		--base-colour-red-400: 0deg 100% 78%;
-		--base-colour-red-500: 0deg 100% 73%;
-		--base-colour-red-600: 0deg 100% 68%;
-		--base-colour-red-700: 0deg 100% 63%;
-		--base-colour-red-800: 0deg 100% 58%;
-		--base-colour-red-900: 0deg 100% 53%;
-		--base-colour-red-950: 0deg 100% 50%;
-
-
+		--base-colour-red-50: 335deg 80% 97%;
+		--base-colour-red-100: 335deg 80% 96%;
+		--base-colour-red-200: 335deg 80% 93%;
+		--base-colour-red-300: 335deg 80% 90%;
+		--base-colour-red-400: 335deg 80% 88%;
+		--base-colour-red-500: 335deg 80% 85%;
+		--base-colour-red-600: 335deg 80% 82%;
+		--base-colour-red-700: 335deg 80% 79%;
+		--base-colour-red-800: 335deg 80% 77%;
+		--base-colour-red-900: 335deg 80% 74%;
+		--base-colour-red-950: 335deg 80% 72%;
 	}
 
 	:root[data-theme="dark"] {
@@ -78,8 +78,11 @@
 		--theme-quote: 102deg 100% 86%;
 	}
 
+	/**
+   * Scroll margin is used to ensure that the element is not hidden behind the header.
+   */
 	html {
-		@apply relative scroll-smooth;
+		@apply relative scroll-pt-16 scroll-smooth md:scroll-pt-20;
 	}
 
 	body {
@@ -95,7 +98,11 @@
 	}
 
 	h2 {
-		@apply pb-6 font-afterAllRegular text-2xl font-bold tracking-wide md:text-4xl;
+		@apply mb-0 pb-6 font-charterRegular text-2xl font-bold tracking-wide md:text-4xl;
+	}
+
+	h3 {
+		@apply font-charterRegular text-xl font-bold tracking-wide md:text-2xl;
 	}
 
 	p {
