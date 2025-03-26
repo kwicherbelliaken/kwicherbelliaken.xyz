@@ -2,6 +2,7 @@
 import FormattedDate from "@/components/FormattedDate.astro";
 import SocialList from "@/components/SocialList.astro";
 import PostPreview from "@/components/blog/PostPreview.astro";
+import LabNotes from "@/components/lab-notes/LabNotes.astro";
 import HeroImage from "@/components/landing/HeroImage.astro";
 import { getAllPosts, sortMDByDate } from "@/data/post";
 import PageLayout from "@/layouts/Base.astro";
@@ -54,68 +55,7 @@ console.log("🚀 ~ Content:", Content);
 		<section
 			class="absolute right-0 h-full max-w-[25%] overflow-y-scroll bg-bgColour-muted/30 shadow-[-10px_0_15px_-3px_rgba(0,0,0,0.1)] md:top-20"
 		>
-			<div class="h-full outline outline-2 outline-black/10 ring-1 ring-inset ring-gray-900/10">
-				<div class="sticky left-0 top-0">
-					<div class="bg-gray-900/2.5 shadow-md ring-1 ring-inset ring-gray-900/10">
-						<div class="flex w-full flex-col items-center justify-between">
-							<div
-								class="flex w-full flex-row items-center justify-center bg-red-500 py-2 align-middle backdrop-blur-md"
-							>
-								<h2 class="p-0">Lab Notes</h2>
-							</div>
-
-							<Icon class="size-24" name="flask" />
-						</div>
-					</div>
-				</div>
-				<div class="flex overflow-y-scroll">
-					<ul>
-						{
-							allLabNotes.map((l) => (
-								<li>
-									<div class="flex flex-col">
-										<div class="grid w-full grid-cols-3 gap-2">
-											<div class="col-span-full grid grid-cols-3 gap-2 bg-pink-300">
-												<div class="col-span-1 flex w-fit items-center rounded-br-lg bg-red-100 px-2 py-1 pr-3">
-													<span class="font-maisonNeueMono font-bold text-fgColour-accent">
-														{l.data.experiment}
-													</span>
-												</div>
-
-												<div class="col-span-3">
-													<div class="p-2">
-														<div class="break-words">
-															<h3>{l.data.title}</h3>
-														</div>
-
-														<p>
-															<FormattedDate
-																date={l.data.publishDate}
-																dateTimeOptions={dateTimeOptions}
-															/>
-														</p>
-													</div>
-												</div>
-											</div>
-											{/* <div class="col-span-3 flex flex-wrap gap-1 outline outline-2 outline-blue-500 justify-around">
-												{l.data.tags.map((tag: string) => (
-													<span class="rounded-sm bg-blue-100 px-1.5 py-0.5 text-3xs">{tag}</span>
-												))}
-											</div> */}
-
-											<div class="col-span-3">
-												<div class="prose prose-kwicherbelliaken p-2">
-													<Content />
-												</div>
-											</div>
-										</div>
-									</div>
-								</li>
-							))
-						}
-					</ul>
-				</div>
-			</div>
+			<LabNotes />
 		</section>
 	</div>
 </PageLayout>
