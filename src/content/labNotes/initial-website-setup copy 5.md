@@ -1,5 +1,5 @@
 ---
-title: "An example post with a really really really long name that"
+title: "Yeeeeessss"
 description: "Documentation of the initial setup process for kwicherbelliaken.xyz, including key technical decisions and implementation details."
 publishDate: "2024-03-25"
 tags: ["setup", "astro", "configuration", "documentation"]
@@ -11,7 +11,7 @@ draft: false
 This lab note documents the initial setup and configuration of kwicherbelliaken.xyz. The site is built using Astro, with a focus on performance, maintainability, and clean architecture.
 
 ```javascript
-const apple = "apple";
+const apple = "banana";
 ```
 
 ### Next Steps
