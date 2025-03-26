@@ -38,18 +38,27 @@ console.log("🚀 ~ allLabNotes:", allLabNotes);
 				</ul>
 			</section>
 		</section>
-		<!-- placeholder section -->
+		<!-- empty, placeholder section -->
 		<section class="col-span-2 h-full"></section>
 
 		<section
 			class="absolute right-0 h-full max-w-[25%] overflow-y-scroll bg-bgColour-muted/30 md:top-20"
 		>
-			<div class="h-full p-2 outline outline-2 outline-black/10 ring-1 ring-inset ring-gray-900/10">
-				<div class="bg-gray-900/2.5 rounded-xl p-2 shadow-md ring-1 ring-inset ring-gray-900/10">
-					<h2 class="flex flex-col items-center gap-2">
-						<Icon class="size-10" name="flask" />
-						Lab Notes
-					</h2>
+			<div class="h-full outline outline-2 outline-black/10 ring-1 ring-inset ring-gray-900/10">
+				<div class="sticky left-0 top-0">
+					<div class="bg-gray-900/2.5 shadow-md ring-1 ring-inset ring-gray-900/10">
+						<div class="flex w-full flex-col items-center justify-between">
+							<div
+								class="flex w-full flex-row items-center justify-center bg-red-500 py-2 align-middle backdrop-blur-md"
+							>
+								<h2 class="p-0">Lab Notes</h2>
+							</div>
+
+							<Icon class="size-24" name="flask" />
+						</div>
+					</div>
+				</div>
+				<div class="flex overflow-y-scroll">
 					<ul>
 						{allLabNotes.map((l) => <li>{l.data.title}</li>)}
 					</ul>
