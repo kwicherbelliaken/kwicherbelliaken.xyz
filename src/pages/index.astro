@@ -16,6 +16,16 @@ const allPostsByDate = sortMDByDate(allPosts).slice(0, MAX_POSTS);
 		<section class="col-span-5">
 			<HeroImage />
 			<!-- <SocialList /> -->
+
+			<section
+				class={`
+        relative col-span-5 overflow-y-scroll mt-16 max-h-96
+        bg-bgColour-muted/30
+        md:max-w-[25%] md:absolute md:right-0 md:top-20 md:h-full md:mt-0 md:max-h-none
+      `}
+			>
+				<LabNotes />
+			</section>
 			<section aria-label="Blog post list" class="mt-16">
 				<h2 class="mb-4">Posts</h2>
 				<ul class="space-y-4">
@@ -31,16 +41,6 @@ const allPostsByDate = sortMDByDate(allPosts).slice(0, MAX_POSTS);
 		</section>
 		<!-- empty, placeholder section -->
 		<section class="col-span-2 h-full"></section>
-
-		<section
-			class={`
-        relative h-full col-span-5 overflow-y-scroll
-        bg-bgColour-muted/30
-        md:max-w-[25%] md:absolute md:right-0 md:top-20
-      `}
-		>
-			<LabNotes />
-		</section>
 	</div>
 </PageLayout>
 
