@@ -33,4 +33,27 @@ const post = defineCollection({
 	type: "content",
 });
 
-export const collections = { post };
+const labNotes = defineCollection({
+	schema: ({ image }) =>
+		z.object({
+			coverImage: z
+				.object({
+					alt: z.string(),
+					src: image(),
+				})
+				.optional(),
+			description: z.string().min(50).max(160),
+			draft: z.boolean().default(false),
+			experiment: z.string().optional(),
+			publishDate: z
+				.string()
+				.or(z.date())
+				.transform((val) => new Date(val)),
+			status: z.enum(["in-progress", "completed", "on-hold"]).default("in-progress"),
+			tags: z.array(z.string()).default([]).transform(removeDupsAndLowerCase),
+			title: z.string().max(60),
+		}),
+	type: "content",
+});
+
+export const collections = { labNotes, post };
