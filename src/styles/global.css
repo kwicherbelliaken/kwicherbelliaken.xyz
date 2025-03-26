@@ -106,6 +106,6 @@
 	}
 
 	p {
-		@apply font-maisonNeueMono;
+		@apply font-charterRegular leading-6;
 	}
 }
