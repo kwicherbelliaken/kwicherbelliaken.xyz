@@ -34,16 +34,9 @@ const post = defineCollection({
 });
 
 const labNotes = defineCollection({
-	schema: ({ image }) =>
+	schema: () =>
 		z.object({
-			coverImage: z
-				.object({
-					alt: z.string(),
-					src: image(),
-				})
-				.optional(),
 			description: z.string().min(50).max(160),
-			draft: z.boolean().default(false),
 			experiment: z.string().optional(),
 			publishDate: z
 				.string()

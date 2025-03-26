@@ -33,7 +33,11 @@ const allPostsByDate = sortMDByDate(allPosts).slice(0, MAX_POSTS);
 		<section class="col-span-2 h-full"></section>
 
 		<section
-			class="absolute right-0 h-full max-w-[25%] overflow-y-scroll bg-bgColour-muted/30 md:top-20"
+			class={`
+        relative h-full col-span-5 overflow-y-scroll
+        bg-bgColour-muted/30
+        md:max-w-[25%] md:absolute md:right-0 md:top-20
+      `}
 		>
 			<LabNotes />
 		</section>
