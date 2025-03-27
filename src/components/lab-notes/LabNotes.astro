@@ -1,6 +1,8 @@
 ---
+import compositionNotebook from "@/assets/composition-notebook.jpg";
 import FormattedDate from "@/components/FormattedDate.astro";
 import { getAllPosts, sortMDByDate } from "@/data/post";
+import { Image } from "astro:assets";
 import { getCollection } from "astro:content";
 import { Icon } from "astro-icon/components";
 
@@ -8,6 +10,8 @@ async function getAllLabNotes() {
 	const allLabNotes = await getCollection("labNotes");
 	return allLabNotes;
 }
+
+// #d5d7c1
 
 // const MAX_POSTS = 10;
 // const allPosts = await getAllPosts();
@@ -23,12 +27,31 @@ const dateTimeOptions: Intl.DateTimeFormatOptions = {
 <div class="h-full border-l-2 border-l-black/10">
 	<div class="sticky left-0 top-0">
 		<div class="shadow-md">
-			<div class="flex w-full flex-col items-center justify-between backdrop-blur-sm">
+			<div class="relative border-l-[2rem] border-l-black">
+				<Image
+					alt="A composition notebook"
+					class="h-full"
+					loading="eager"
+					src={compositionNotebook}
+				/>
+				<div class="absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2">
+					<div class="rounded-md bg-[#d5d7c1] py-2 px-4">
+						<div class="flex w-full flex-col items-center justify-between">
+							<Icon class="size-12" name="flask" />
+							<div class="flex w-full flex-row items-center justify-center py-2 align-middle">
+								<h2 class="p-0 font-maisonNeueMono font-bold text-sm">Lab Notes</h2>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- <div class="flex w-full flex-col items-center justify-between">
 				<Icon class="size-24" name="flask" />
 				<div class="flex w-full flex-row items-center justify-center py-2 align-middle">
 					<h2 class="p-0">Lab Notes</h2>
 				</div>
-			</div>
+			</div> -->
 		</div>
 	</div>
 	<div class="flex overflow-y-scroll">
