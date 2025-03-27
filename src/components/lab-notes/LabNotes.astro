@@ -18,28 +18,12 @@ const allLabNotes = await getAllLabNotes();
 const dateTimeOptions: Intl.DateTimeFormatOptions = {
 	month: "long",
 };
-
-// blue - 2e6aa9
-
-// green - cbfa8b
-
-// pink - de7dab
-
-// papaya green - 95bf42
-
-// violet - c2bbf0
-
-// yellow - f6dc53
-
-const ORANGE = "#ec971a";
-const GREEN = "#77b818";
-const BLUE = "#2e6aa9";
 ---
 
 <div class="h-full border-l-2 border-l-black/10">
 	<div class="sticky left-0 top-0">
 		<div class="shadow-md">
-			<div class="flex w-full flex-col items-center justify-between bg-black/10 backdrop-blur-sm">
+			<div class="flex w-full flex-col items-center justify-between backdrop-blur-sm">
 				<Icon class="size-24" name="flask" />
 				<div class="flex w-full flex-row items-center justify-center py-2 align-middle">
 					<h2 class="p-0">Lab Notes</h2>
@@ -57,7 +41,7 @@ const BLUE = "#2e6aa9";
 							<div class="flex flex-col">
 								<div class="grid w-full grid-cols-3 gap-2">
 									<div class="col-span-full grid grid-cols-3 gap-2">
-										<div class="col-span-1 flex w-fit items-center rounded-br-lg border border-white/40 bg-fgColour-default/20 px-2 py-1 pr-3">
+										<div class="col-span-1 flex w-fit items-center rounded-br-lg border-[1px] border-black/10 bg-fgColour-default/20 px-2 py-1 pr-3">
 											<span class="font-maisonNeueMono font-bold">{note.data.experiment}</span>
 										</div>
 										<div class="col-span-3">
