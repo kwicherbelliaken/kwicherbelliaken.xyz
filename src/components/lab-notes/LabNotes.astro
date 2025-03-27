@@ -18,16 +18,30 @@ const allLabNotes = await getAllLabNotes();
 const dateTimeOptions: Intl.DateTimeFormatOptions = {
 	month: "long",
 };
+
+// blue - 2e6aa9
+
+// green - cbfa8b
+
+// pink - de7dab
+
+// papaya green - 95bf42
+
+// violet - c2bbf0
+
+// yellow - f6dc53
+
+const ORANGE = "#ec971a";
+const GREEN = "#77b818";
+const BLUE = "#2e6aa9";
 ---
 
-<div class="h-full outline outline-2 outline-black/10 ring-1 ring-inset ring-gray-900/10">
+<div class="h-full border-l-2 border-l-black/10">
 	<div class="sticky left-0 top-0">
-		<div class="shadow-md ring-1 ring-inset ring-gray-900/10">
-			<div class="flex w-full flex-col items-center justify-between bg-bgColour-muted">
+		<div class="shadow-md">
+			<div class="flex w-full flex-col items-center justify-between bg-black/10 backdrop-blur-sm">
 				<Icon class="size-24" name="flask" />
-				<div
-					class="flex w-full flex-row items-center justify-center py-2 align-middle backdrop-blur-md"
-				>
+				<div class="flex w-full flex-row items-center justify-center py-2 align-middle">
 					<h2 class="p-0">Lab Notes</h2>
 				</div>
 			</div>
@@ -42,11 +56,9 @@ const dateTimeOptions: Intl.DateTimeFormatOptions = {
 						<li>
 							<div class="flex flex-col">
 								<div class="grid w-full grid-cols-3 gap-2">
-									<div class="col-span-full grid grid-cols-3 gap-2 bg-pink-300">
-										<div class="col-span-1 flex w-fit items-center rounded-br-lg bg-red-100 px-2 py-1 pr-3">
-											<span class="font-maisonNeueMono font-bold text-fgColour-accent">
-												{note.data.experiment}
-											</span>
+									<div class="col-span-full grid grid-cols-3 gap-2">
+										<div class="col-span-1 flex w-fit items-center rounded-br-lg border border-white/40 bg-fgColour-default/20 px-2 py-1 pr-3">
+											<span class="font-maisonNeueMono font-bold">{note.data.experiment}</span>
 										</div>
 										<div class="col-span-3">
 											<div class="p-2">
@@ -54,7 +66,7 @@ const dateTimeOptions: Intl.DateTimeFormatOptions = {
 													<h3>{note.data.title}</h3>
 												</div>
 
-												<p>
+												<p class="text-fgColour-muted/60">
 													<FormattedDate
 														date={note.data.publishDate}
 														dateTimeOptions={dateTimeOptions}
