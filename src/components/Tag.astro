@@ -11,7 +11,7 @@ function className(...inputs: ClassValue[]) {
 }
 
 const tag = cva(
-	"inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+	"relative inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
 	{
 		compoundVariants: [{ class: "uppercase", size: "medium", variant: "primary" }],
 		variants: {
@@ -29,15 +29,23 @@ const tag = cva(
 	}
 );
 
-export interface TagProps extends HTMLAttributes<"span">, VariantProps<typeof tag> {}
+export interface TagProps extends HTMLAttributes<"span">, VariantProps<typeof tag> {
+	href: string;
+	label: string;
+}
 
 /**
  * For Astro components, we recommend setting your defaultVariants within
  * Astro.props (which are `undefined` by default)
  */
-const { size = "medium", variant = "primary" } = Astro.props;
+const { href, label, size = "medium", variant = "primary" } = Astro.props;
 ---
 
 <span class={className(tag({ size, variant }))}>
-	<slot />
+	<a class="relative" href={href}>
+		<span
+			class="absolute left-1/2 top-1/2 h-12 w-[calc(100%+3rem)] -translate-x-1/2 -translate-y-1/2 [@media(pointer:fine)]:hidden"
+		></span>
+		{label}
+	</a>
 </span>
