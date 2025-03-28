@@ -46,7 +46,7 @@ const allPostsByDate = sortMDByDate(allPosts).slice(0, MAX_POSTS);
 
 <style>
 	/* override our CSS reset because of the unique layout of the page */
-	body {
+	:global(body) {
 		max-width: 100%;
 	}
 </style>
