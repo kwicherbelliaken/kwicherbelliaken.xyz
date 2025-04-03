@@ -1,0 +1,23 @@
+---
+interface Props {
+	content: string[];
+}
+
+const { content } = Astro.props;
+---
+
+<div class="relative my-8">
+	<div
+		class="absolute left-0 top-0 h-full w-1 rounded-full bg-gradient-to-b from-gray-300 to-gray-100"
+	>
+	</div>
+	<div class="pl-6">
+		<h2 class="mb-4 flex items-center font-serif text-2xl tracking-wide">
+			<span class="font-medium text-gray-800">TL;DR</span>
+			<span class="ml-2 h-11 flex-grow bg-pink-300"></span>
+		</h2>
+		<div class="prose prose-slate leading-relaxed text-gray-700">
+			{content.map((paragraph) => <p class="mb-4">{paragraph}</p>)}
+		</div>
+	</div>
+</div>
