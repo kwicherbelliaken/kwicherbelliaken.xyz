@@ -26,9 +26,7 @@ const { headings } = await post.render();
 		{!!headings.length && <TOC headings={headings} />}
 		<article class="flex-grow break-words" data-pagefind-body>
 			<div id="blog-hero"><BlogHero content={post} /></div>
-			<div
-				class="prose prose-kwicherbelliaken mt-12"
-			>
+			<div class="prose prose-kwicherbelliaken mt-12">
 				<slot />
 				<WebMentions />
 			</div>
