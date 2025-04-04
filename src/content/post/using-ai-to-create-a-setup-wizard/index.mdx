@@ -31,7 +31,7 @@ It is worth noting that all of this was done using Claude Sonnet 3.7 in agentic 
 
 1. Set context. Define the problem space for the LLM to generate a Product Requirements Document (PRD).
 
-2. Create a detailed Software Development Plan (SDP) from the PRD.
+2. Create a detailed implementation plan from the PRD.
 
 3. Implement the feature gradually, step by step, following the SDP.
 
@@ -106,14 +106,14 @@ What else do you need to know to produce a PRD with the fewest open questions?
 
 1. In conclusion a Product Requirement Document (PRD). However, to get there we expected to have to answer questions from the LLM. The whole point of this exercise was to gain alignment with the LLM, so that it may produce a PRD which we could then validate and use for development. There was a lot of back and forth, the LLM asking questions and us clarifying them.
 
-### 2. Creating a Plan of Implementation
+### 2. Creating an Implementation Plan
 
 Have the LLM generate a plan for how it will achieve the work outlined in the PRD.
 
 **Inputs:**
 
 1. The PRD produced from step 1.
-2. An instruction to generate a software development plan. We focused on making sure we produced a plan that was refined enough that once we came to implementation, and the LLM using it as its roadmap, that the composing tasks, the slices, it was stepping through were obvious enough and of appropriate enough granularity that the possibility of the LLM being confused as at a minimum.
+2. An instruction to generate an implementation plan. We focused on making sure we produced a plan that was refined enough that once we came to implementation, and the LLM using it as its roadmap, that the composing tasks, the slices, it was stepping through were obvious enough and of appropriate enough granularity that the possibility of the LLM being confused as at a minimum.
 3. We reviewed the plan it generated and continuously asked it for edits and clarification. Doing this was important to, again, make sure that it was aligned with our vision of the work to be done.
 
 What did this look like in practice?
@@ -124,15 +124,15 @@ using the @user-set-up-wizard-prd.md PRD, please write a fine-grained implementa
 
 **Outputs:**
 
-1. A software development plan.
+1. An implementation plan.
 
 ### 3. Implementation
 
-Have the LLM implement the feature using the software development plan as its roadmap. We made sure that as the LLM worked through this document, that it checked off the steps it had completed.
+Have the LLM implement the feature using the implementation plan as its roadmap. We made sure that as the LLM worked through this document, that it checked off the steps it had completed.
 
 **Inputs:**
 
-1. The software development plan produced from step 2.
+1. The implementation plan produced from step 2.
 
 What did this look like in practice?
 
@@ -162,10 +162,10 @@ Alternatively, we could have taken different steps in the implementation plan an
 
 **Software Development Principles: What We Sacrificed, Prototyping Versus Production**
 
-Ed gave us great feedback that made us rethink how we were using the LLM. Regardless of the tool, we took an approach that didn't align with our usual way of working or best practices. Instead of breaking the work into small, shippable pieces, we went for a big bang, fully complete feature. That's the opposite of how we normally work—where research and experience show that small, incremental progress leads to better results.
+We got great feedback that, irrespective of the LLM, we took an approach that didn't align with our usual way of working or best practices. Instead of breaking the work into small, shippable pieces, we went for a big bang, fully complete feature. That's the opposite of how we normally work—where research and experience show that small, incremental progress leads to better results.
 
 Skipping incremental progress in favour of a big reveal is a bad approach. It doesn't make us faster—if anything, it makes productionising harder, lamer, messier, and more time-consuming because everything has to come together perfectly at once. Our brains aren't wired to handle that kind of complexity, which is exactly why we do better when we break work into smaller, modular tasks and build up from there.
 
 That doesn't mean the approach was a waste. If we had treated it as an experiment or a prototyping phase rather than something we planned to ship, the LLM would have been really useful. But it's crucial to keep that mindset from the start—the code isn't meant to be polished or production-ready. It's just a reference point for exploring ideas, testing solutions, and understanding how everything fits together. More importantly, it helps uncover risks and things we might have missed. The key is to treat this code as disposable.
 
-I do see value in using LLMs during our initial mobbing sessions to build shared understanding before splitting off into parallel work. They're great for quickly prototyping ideas, spotting blind spots, and identifying risks early. But it's crucial to keep these prototypes low fidelity. If we find ourselves nitpicking button styles, we're treating the output as the final product instead of using it as a tool to make building the real thing easier.
+I do see value in using LLMs during our initial mobbing sessions to build shared understanding before splitting off onto parallel work. They're great for quickly prototyping ideas, spotting blind spots, and identifying risks early. But it's crucial to keep these prototypes low fidelity. If we find ourselves nitpicking button styles, we're treating the output as the final product instead of using it as a tool to make building the real thing easier.
