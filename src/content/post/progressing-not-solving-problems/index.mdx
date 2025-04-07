@@ -2,7 +2,7 @@
 title: "The Problem With Solving Problems"
 description: "Why focusing on making progress rather than solving problems outright can lead to better outcomes in software development"
 publishDate: 06 April 2025
-updatedDate: 06 April 2025
+updatedDate: 07 April 2025
 tags: ["engineering"]
 ---
 
@@ -18,11 +18,11 @@ Most problems can be solved with enough time and effort—but since both are usu
 
 The most obvious question to ask when you’re faced with a problem is: _“How can I solve this?”_ That’s a natural instinct—but it can be a misleading first step. A better place to start is by asking: _“Why is this a problem? Specifically, how did we come to be aware of it?”_. In answering this question, you may find that you exchange a hard problem for an easy one.
 
-We ran into an issue where users were uploading empty (zero byte) files, which caused a service that depended on the upload result to fail. The way we found out? Our alert channel was getting flooded with these errors. While users were somewhat shielded from the problem thanks to client retries and the chance to fix things on their end, the real issue was on our side—the constant alerts were making it harder to notice real problems. It was messing with our signal-to-noise ratio and desensitizing us to alerts. So even though the uploads were a user issue, the alert noise was a bigger operational problem for us.
+We ran into an issue where users were uploading empty (zero byte) files, which caused a service that depended on the upload result to fail. How did we become aware of it? Our alert channel was getting flooded with these errors. While users were somewhat shielded from the problem thanks to retry logic and the chance to fix things on their end, the real issue was on our side—the constant alerts were making it harder to notice real problems. It was messing with our signal-to-noise ratio and desensitizing us to alerts. So even though the uploads were a user issue, the alert noise was a bigger operational problem for us.
 
 The first option for progressing a problem is a little hard to define because it feels quite coupled to the specific scenario we were having. But, I think it can best be summarised as:
 
-1. **Ask why this is a problem. Specifically, how did you come to be aware of?**
+1. **Ask why this is a problem. Specifically, how did you come to be aware of it?**
 
 - This counts as progressing the problem because asking that question might show the problem you think you’re meant to solve isn’t the right one—or not the one you’re best placed to solve.
 
@@ -40,7 +40,7 @@ When direct solutions don’t work, we look for other options and focus on findi
 
 3. **Improve the user experience around the error state**
 
-- Can we make it easier for users to recover from the error on their own?
+- How can we make it easier for users to recover from the error on their own?
 
 Great. We have three ways to handle the problem. Anything else? Well, yeah, there is one notable option that is always worth considering. And as much as it seems a non-serious option, it really isn't. It's the option to do nothing. We do nothing when any pursuit of other available options is a wasted exercise.
 
