@@ -134,6 +134,9 @@ export default {
 						h2: {
 							"@apply mb-0 text-2xl": "",
 						},
+						li: {
+							"@apply font-charterRegular": "",
+						},
 					},
 				},
 				sm: {
