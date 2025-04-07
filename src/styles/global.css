@@ -86,7 +86,12 @@
 	}
 
 	body {
-		@apply mx-auto flex min-h-screen max-w-3xl flex-col bg-bgColour-default px-8 pt-16 font-mono text-sm font-normal text-fgColour-default antialiased;
+		@apply mx-auto flex min-h-screen flex-col bg-bgColour-default px-8 pt-16 font-mono text-sm font-normal text-fgColour-default antialiased;
+	}
+
+	/* Apply max-width to all pages except home */
+	body:not([data-page="home"]) {
+		@apply max-w-3xl;
 	}
 
 	main {
