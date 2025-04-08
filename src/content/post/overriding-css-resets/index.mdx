@@ -1,0 +1,77 @@
+---
+title: "Overriding CSS Resets For Page Specific Styling"
+description: "Using HTML data attributes to override global max-width constraints for specific pages in Astro"
+publishDate: 08 April 2025
+updatedDate: 09 April 2025
+tags: ["css"]
+---
+
+## The Problem
+
+I initially set up my project with a CSS reset that applied a maximum width to the body element:
+
+```css title="global.css"
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+	body {
+		@apply ... max-w-3xl;
+	}
+}
+```
+
+This worked well for most pages, but created an issue on my landing page where I needed the content to span the full width.
+
+## Attempts
+
+**1. Overriding The Width Locally**
+
+This was a failed attempt. My first instinct was to override the max width in my landing page component:
+
+```astro title="index.astro"
+<style>
+	:global(body) {
+		max-width: 100%;
+	}
+</style>
+```
+
+While this worked in my local development environment, it failed in production. The global stylesheet seemed to take precedence over my local styles, _somewhat_ contradicting Astro's documentation which states:
+
+> When conflicting styles are defined both globally and in a page’s local `<style>` tag, the local styles should overwrite any global styles. (But, there can be other factors involved, so always visually inspect your site to make sure your styles are properly applied!)
+>
+> [Add site wide styling](https://docs.astro.build/en/tutorial/2-pages/5/)
+
+**2. Conditional Styling Off HTML Attribute**
+
+This worked. It involved dynamically setting an HTML data attribute on the body element as high up in the page as possible. I did this in my base layout component.
+
+```html title="Base.astro"
+---
+const currentPath = Astro.url.pathname;
+const isHomePage = currentPath === "/";
+---
+
+<body data-page={isHomePage ? "home" : "default"} />
+```
+
+Then in my global CSS, I modified the styling to apply the max-width to all pages _except_ the home page:
+
+```css title="global.css"
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+	body {
+		@apply ... max-w-full;
+	}
+
+	/* Apply max-width to all pages except home/landing page */
+	body:not([data-page="home"]) {
+		@apply max-w-3xl;
+	}
+}
+```
