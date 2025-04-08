@@ -1,9 +1,8 @@
 ---
-import compositionNotebook from "@/assets/composition-notebook.jpg";
+import labBook from "@/assets/lab-book.jpg";
 import FormattedDate from "@/components/FormattedDate.astro";
 import { Image } from "astro:assets";
 import { getCollection } from "astro:content";
-import { Icon } from "astro-icon/components";
 
 async function getAllLabNotes() {
 	const allLabNotes = await getCollection("labNotes");
@@ -18,48 +17,8 @@ const dateTimeOptions: Intl.DateTimeFormatOptions = {
 
 <div class="h-full border-2 border-black/10">
 	<div class="sticky left-0 top-0">
-		<div class="relative border-l-[2rem] border-l-black">
-			<div class="max-h-36 overflow-hidden md:max-h-64">
-				<Image
-					alt="A composition notebook"
-					class="h-full"
-					loading="eager"
-					src={compositionNotebook}
-				/>
-			</div>
-			<div class="absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2">
-				<div class="rounded-md border border-black/30 bg-[#d5d7c1] px-5 py-3 shadow-md">
-					<div class="hidden w-full flex-col items-center justify-between gap-2 lg:flex">
-						<Icon class="size-10 text-black/90" name="flask" />
-						<div
-							class="flex w-full flex-row items-center justify-center border-t border-black/20 py-1 align-middle"
-						>
-							<h2
-								class="p-0 font-maisonNeueMono text-sm font-bold uppercase tracking-wider text-black/90"
-							>
-								Laboratory Notes
-							</h2>
-						</div>
-					</div>
-					<div class="mt-3 border-t border-black/20 pt-2 text-xs">
-						<div class="flex justify-between font-maisonNeueMono">
-							<span class="font-bold">Researcher:</span>
-							<span>K. Belliaken</span>
-						</div>
-						<div class="mt-1.5 flex justify-between font-maisonNeueMono">
-							<span class="font-bold">Classification:</span>
-							<span>Experimental</span>
-						</div>
-						<div class="mt-1.5 flex justify-between font-maisonNeueMono">
-							<span class="font-bold">Date:</span>
-							<span>2023-Present</span>
-						</div>
-						<div class="mt-2 border-t border-black/20 pt-1 text-center font-maisonNeueMono">
-							<span class="italic">CONFIDENTIAL RESEARCH MATERIAL</span>
-						</div>
-					</div>
-				</div>
-			</div>
+		<div class="relative border-b-2 border-black/10">
+			<Image alt="A lab book" loading="eager" src={labBook} />
 		</div>
 	</div>
 	<div class="flex overflow-y-scroll">
