@@ -28,31 +28,28 @@ const dateTimeOptions: Intl.DateTimeFormatOptions = {
 					const { Content } = await note.render();
 					return (
 						<li>
-							<div class="flex flex-col">
-								<div class="grid w-full grid-cols-3 gap-2">
-									<div class="col-span-full grid grid-cols-3 gap-2">
-										<div class="col-span-1 flex w-fit items-center rounded-br-lg border-[1px] border-black/10 bg-fgColour-default/20 px-2 py-1 pr-3">
-											<span class="font-maisonNeueMono font-bold">{note.data.experiment}</span>
+							<div class="flow col-span-full grid grid-cols-3 [--flow-space:0.5rem]">
+								<div class="col-span-1 flex w-fit items-center rounded-br-lg border-[1px] border-black/10 bg-fgColour-default/20 px-2 py-1 pr-3">
+									<span class="font-maisonNeueMono font-bold">{note.data.experiment}</span>
+								</div>
+								<div class="col-span-3">
+									<div class="p-2">
+										<div class="break-words">
+											<h3>{note.data.title}</h3>
 										</div>
-										<div class="col-span-3">
-											<div class="p-2">
-												<div class="break-words">
-													<h3>{note.data.title}</h3>
-												</div>
 
-												<p class="text-fgColour-muted/60">
-													<FormattedDate
-														date={note.data.publishDate}
-														dateTimeOptions={dateTimeOptions}
-													/>
-												</p>
-											</div>
-										</div>
+										<p class="text-fgColour-muted/60">
+											<FormattedDate
+												date={note.data.publishDate}
+												dateTimeOptions={dateTimeOptions}
+											/>
+										</p>
 									</div>
-									<div class="col-span-3 p-2">
-										<div class="prose prose-kwicherbelliaken">
-											<Content />
-										</div>
+								</div>
+
+								<div class="col-span-3 mt-2 p-2">
+									<div class="prose prose-kwicherbelliaken">
+										<Content />
 									</div>
 								</div>
 							</div>

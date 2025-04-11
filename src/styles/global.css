@@ -113,4 +113,13 @@
 	p {
 		@apply font-charterRegular leading-6;
 	}
+
+	.flow {
+		--flow-space: 1rem;
+	}
+
+	.flow > * + * {
+    margin-top: 1rem;
+		margin-top: var(--flow-space);
+	}
 }
