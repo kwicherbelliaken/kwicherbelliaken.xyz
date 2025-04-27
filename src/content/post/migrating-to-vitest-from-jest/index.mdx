@@ -1,0 +1,180 @@
+---
+title: "Migrating to Vitest from Jest"
+description: "A practical guide to migrating your test suite from Jest to Vitest, including common pitfalls, solutions, and observations from a real-world migration."
+publishDate: 26 April 2025
+updatedDate: 27 April 2025
+tags: ["testing", "jest", "vitest"]
+---
+
+import firstErrorImg from "./first-error.png";
+import windowExtendedError from "./window-extended.png";
+import removingActClosures from "./removing-act-closures.png";
+import vitestTrouble from "./vitest-trouble-with-act-closures.png";
+
+import CaptionedImage from "@/components/CaptionedImage.astro";
+
+## A Straightforward Process
+
+Migrating to Vitest from Jest is pretty straight forward as Vitest retains much of Jest's API.
+
+Here is a broad outline of the steps you'll need to follow:
+
+**Replace Jest Mocks & Functions**
+
+1. jest.fn() ➡️ vi.fn().
+2. jest.mock() ➡️ vi.mock().
+3. jest.mocked() ➡️ vi.mocked().
+4. jest.requireActual() ➡️ vi.importActual().
+5. jest.clearAllMocks() ➡️ vi.clearAllMocks().
+
+**Add Necessary Imports**
+
+```typescript
+import { vi } from "vitest";
+import "@testing-library/jest-dom/vitest";
+```
+
+### Errors You May Encounter
+
+#### Global Matchers
+
+This was the first error I encountered after making the above replacements.
+
+<CaptionedImage
+	src={firstErrorImg}
+	alt="Vitest missing global matchers error screenshot"
+	caption="Vitest throws an error because matchers are not available globally by default."
+/>
+
+Bah, humbug. Unlike Jest, Vitest does not export its matchers globally and we need update the vitest.config, per the official documentation. I should reference [[New Project Setup#Vitest]].
+
+> By default, `vitest` does not provide global APIs for explicitness. If you prefer to use the APIs globally like Jest, you can pass the `--globals` option to CLI or add `globals: true` in the config.
+>
+> [Configuring Vitest](https://vitest.dev/config/#globals)
+
+```typescript title="vitest.config.ts"
+import { defineConfig } from 'vitest/config';
+
+export default defineConfig({
+  test: {
+    ...
+    globals: true,
+  },
+});
+```
+
+#### Custom Window Object
+
+<CaptionedImage
+	src={windowExtendedError}
+	alt="Vitest error due to extended window object"
+	caption="Vitest throws an error because the app extends the global window object with custom properties, which must be handled in the test environment."
+/>
+
+The error occurs because our app extends the global window object with custom properties. To fix this, we need to override the window object in the test environment. This issue isn't specific to Vitest, we make the same accommodation for Jest. The solution:
+
+```typescript title="vitest.setup.ts"
+...
+
+declare global {
+  interface Window {
+    CONQA_CONFIG: ReturnType<typeof config.getProperties>;
+  }
+}
+
+window.CONQA_CONFIG = config.getProperties();
+
+...
+```
+
+### Interesting Observations
+
+#### No `act()` Wrapping Needed
+
+I found that migrating to Vitest allowed me to remove all the unnecessary wrapping of user events with `act`. I am not entirely sure why this worked.
+
+<CaptionedImage
+	src={removingActClosures}
+	alt="Vitest test code after removing act() wrappers"
+	caption="After migrating to Vitest, act() wrappers around user events were no longer needed."
+/>
+
+It's surprising because, based on a quick Google search, migrating to Vitest should have caused [more act() warnings](https://github.com/vitest-dev/vitest/issues/1242).
+
+<CaptionedImage
+	src={vitestTrouble}
+	alt="Vitest act() warning spam screenshot"
+	caption="Vitest's JSDOM implementation can cause act() warning spam due to differences in how global objects are handled."
+/>
+
+React Testing Library checks if the `IS_REACT_ACT_ENVIRONMENT` flag is set on the global self object. If it's true, it suppresses `act()` warnings; if not, the warnings show up.
+
+#### Explicitly Mocks For Default Exports
+
+I had to update mocking of the `react-hot-toast` library to explicitly mock the default export.
+
+> When mocking a module in Jest, the factory argument's return value is the default export. In Vitest, the factory argument has to return an object with each export explicitly defined. For example, the following `jest.mock` would have to be updated as follows:
+>
+> [Module Mocks](https://vitest.dev/guide/migration.html#module-mocks)
+
+```typescript
+jest.mock("./some-path", () => "hello");
+
+vi.mock("./some-path", () => ({
+	default: "hello",
+}));
+```
+
+#### Ignore Polyfilling Fetch
+
+Since both Jest and Vitest run in Node and we're using Node 18 for the project, I realised I can remove whatwg-fetch as a test dependency.
+
+#### JSX Exports To Have Proper Extension
+
+I got errors for components importing JSX from .js or .ts files.
+
+```cli
+Error: Failed to parse source for import analysis because the content contains invalid JS syntax. If you are using JSX, make sure to name the file with the .jsx or .tsx extension.
+  Plugin: vite:import-analysis
+  File: /Users/jackwilliammorris/Code/conqa/explorer/src/components/LoadingSpinner/LoadingSpinner.js:12:21
+  10 |      style={style}
+  11 |    >
+  12 |      <p>{message}</p>
+     |                      ^
+  13 |      <Spinner size={5} className="tw-mt-2 tw-inline-block" />
+  14 |    </div>
+```
+
+While Vitest uses Vite under the hood, Jest doesn't. This means the test runners use different strategies for resolving imports, with Vitest seeming to be a little more opinionated than Jest.
+
+The issue was valid and fixing it was as simple as adding the correct file extension.
+
+#### AWS SDK Mocking
+
+I got this error for components that were using the `aws-sdk-client-mock`.
+
+```cli
+ FAIL  src/settings/components/User/tests/UserMfaStatus.test.tsx > UserMfaStatus > should call GetUserCommand with correct parameters
+Error: Invalid Chai property: toHaveReceived. Did you mean "toHaveResolved"?
+```
+
+Specifically, for this code:
+
+```typescript title="UserMfaStatus.test.tsx"
+await waitFor(() => {
+	expect(cognitoMock).toHaveReceivedCommandWith(GetUserCommand, {
+		AccessToken: TEST_ACCESS_TOKEN,
+	});
+});
+```
+
+The `aws-sdk-client-mock` adds its own custom matchers that extend upon the Jest matcher API. However, we are no longer using Jest. And although Vitest is largely Jest consistent, the custom matcher needs to be explicitly added to Vitests `expect` API.
+
+I found that there is a separate package for Vitest matchers called [`aws-sdk-client-mock-vitest`](https://www.npmjs.com/package/aws-sdk-client-mock-vitest)
+
+```typescript title="vitest.config.ts"
+import { expect } from "vitest";
+import { allCustomMatcher } from "aws-sdk-client-mock-vitest";
+
+expect.extend(allCustomMatcher);
+```
