@@ -1,0 +1,168 @@
+---
+title: "Benchmarking Vitest Against Jest"
+description: "Benchmarking Vitest vs Jest: performance results from running 216 tests across 33 files using hyperfine."
+publishDate: 26 April 2025
+updatedDate: 26 April 2025
+tags: ["performance", "testing", "jest", "vitest"]
+---
+
+import TLDRSection from "@/components/TLDRSection.astro";
+
+<TLDRSection>
+	I used Hyperfine to benchmark Jest and Vitest and found no significant performance difference.
+</TLDRSection>
+
+I converted 33 test files covering 216 tests from [[Jest]] to [[Vitest]] and benchmarked their performance. I used hyperfine as my benchmarking tool after finding an example of it being used to compare differences between git branches in Adam Johnsons [blog](https://adamj.eu/tech/2025/01/14/shell-benchmark-branches-hyperfine/).
+
+This is the command I ran with hyperfine:
+
+```txt
+ hyperfine \
+    --warmup 1 \
+    --command-name testing-with-jest \
+    --prepare 'git switch master' \
+    'npm run jest <LIST_OF_33_TEST_FILES> --silent' \
+    --command-name testing-with-vitest \
+    --prepare 'git switch jack/refactor/add-vitest' \
+    'npm run vitest <LIST_OF_33_TEST_FILES> --silent'
+```
+
+If you are interested in understanding the structure of the command passed to hyperfine, Adam does a good job in his blog [Shell: benchmark the difference between two Git branches with hyperfine](https://adamj.eu/tech/2025/01/14/shell-benchmark-branches-hyperfine/). The rub is that on master we run our tests with Jest, while on the feature branch we use Vitest. Hyperfine runs enough samples—about 10 per test runner on the 33 test files—to reliably spot performance differences. It also does a warmup run to reduce cold start effects.
+
+Here are the results:
+
+```txt
+Benchmark 1: testing-with-jest
+  Time (mean ± σ):     15.554 s ±  1.700 s    [User: 71.014 s, System: 9.626 s]
+  Range (min … max):   13.871 s … 20.071 s    10 runs
+
+Benchmark 2: testing-with-vitest
+  Time (mean ± σ):     16.403 s ±  0.749 s    [User: 73.026 s, System: 11.010 s]
+  Range (min … max):   15.626 s … 18.251 s    10 runs
+
+Summary
+  testing-with-jest ran
+    1.05 ± 0.12 times faster than testing-with-vitest
+```
+
+For this test suite, there's no major difference between Jest and Vitest—though Jest is slightly faster.
+
+It is worth noting that, before I discovered Hyperfine, I used Claude to write a shell script that ran the same comparison, comparing their average execution times.
+
+```txt
+#!/bin/bash
+
+# Number of runs for each test runner
+RUNS=10
+
+echo "Running benchmarks. Each test sweep runs $RUNS times"
+echo "----------------------------------------"
+
+# Function to convert time to seconds
+to_seconds() {
+    local time=$1
+    local minutes=$(echo $time | cut -d'm' -f1)
+    local seconds=$(echo $time | cut -d'm' -f2 | cut -d's' -f1)
+    echo "$minutes * 60 + $seconds" | bc
+}
+
+# Function to calculate average time
+calculate_average() {
+    local total=0
+    local count=0
+    while read -r time; do
+        seconds=$(to_seconds "$time")
+        total=$(echo "$total + $seconds" | bc)
+        count=$((count + 1))
+    done
+    if [ $count -gt 0 ]; then
+        echo "scale=3; $total / $count" | bc
+    else
+        echo "0"
+    fi
+}
+
+# Create temporary directories for results
+mkdir -p .benchmark-results
+
+echo "Running Vitest benchmarks..."
+for i in $(seq 1 $RUNS); do
+    echo "Vitest run $i/$RUNS"
+    { time npm run vitest run <LIST_OF_33_JEST_TEST_FILES> --run --silent; } 2> .benchmark-results/vitest_run_$i.txt
+done
+
+echo "Running Jest benchmarks..."
+for i in $(seq 1 $RUNS); do
+    echo "Jest run $i/$RUNS"
+    { time npm run test <LIST_OF_33_VITEST_TEST_FILES> --run --silent; } 2> .benchmark-results/jest_run_$i.txt
+done
+
+# Calculate averages
+echo "----------------------------------------"
+echo "Results:"
+echo "Individual run times:"
+echo "Vitest runs:"
+for i in $(seq 1 $RUNS); do
+    time=$(grep "real" .benchmark-results/vitest_run_$i.txt | awk '{print $2}')
+    seconds=$(to_seconds "$time")
+    echo "Run $i: ${seconds}s"
+done
+
+echo "Jest runs:"
+for i in $(seq 1 $RUNS); do
+    time=$(grep "real" .benchmark-results/jest_run_$i.txt | awk '{print $2}')
+    seconds=$(to_seconds "$time")
+    echo "Run $i: ${seconds}s"
+done
+
+echo "----------------------------------------"
+echo "Averages:"
+echo "Vitest average time: $(grep "real" .benchmark-results/vitest_run_* | awk '{print $2}' | calculate_average)s"
+echo "Jest average time: $(grep "real" .benchmark-results/jest_run_* | awk '{print $2}' | calculate_average)s"
+
+# Save test output for analysis
+echo "----------------------------------------"
+echo "Saving detailed test output for analysis..."
+echo "Vitest output:" > .benchmark-results/vitest_analysis.txt
+cat .benchmark-results/vitest_run_1.txt >> .benchmark-results/vitest_analysis.txt
+echo "Jest output:" > .benchmark-results/jest_analysis.txt
+cat .benchmark-results/jest_run_1.txt >> .benchmark-results/jest_analysis.txt
+
+# Don't cleanup so we can analyze the results
+# rm -rf .benchmark-results
+```
+
+Below are the results. (It's not from running all 33 test files, but from 10 test runs of a single file, and gives an idea of what I produced.)
+
+```txt
+Results:
+Individual run times:
+
+Vitest runs:
+Run 1: 7.369s
+Run 2: 7.049s
+Run 3: 6.771s
+Run 4: 6.553s
+Run 5: 6.389s
+Run 6: 6.179s
+Run 7: 6.136s
+Run 8: 6.363s
+Run 9: 6.379s
+Run 10: 6.665s
+
+Jest runs:
+Run 1: 8.542s
+Run 2: 7.688s
+Run 3: 7.543s
+Run 4: 7.359s
+Run 5: 7.257s
+Run 6: 7.231s
+Run 7: 7.201s
+Run 8: 7.082s
+Run 9: 7.226s
+Run 10: 7.117s
+
+Averages:
+Vitest average time: 6.585s
+Jest average time: 7.424s
+```
