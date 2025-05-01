@@ -110,6 +110,10 @@
 		@apply font-charterRegular text-xl font-bold tracking-wide md:text-2xl;
 	}
 
+	h4 {
+		@apply font-charterRegular text-lg font-bold tracking-wide md:text-xl;
+	}
+
 	p {
 		@apply font-charterRegular leading-6;
 	}
@@ -119,7 +123,7 @@
 	}
 
 	.flow > * + * {
-    margin-top: 1rem;
+		margin-top: 1rem;
 		margin-top: var(--flow-space);
 	}
 }
