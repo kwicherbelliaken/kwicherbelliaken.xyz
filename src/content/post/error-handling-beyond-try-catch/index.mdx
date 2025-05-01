@@ -1,0 +1,293 @@
+---
+title: "Error Handling Beyond Try/Catch: Managing Execution Flow"
+description: "Lessons learned about thoughtful error handling in asynchronous JavaScript and how to manage execution flow when things go wrong."
+publishDate: 01 May 2025
+updatedDate: 02 April 2025
+tags: ["engineering"]
+---
+
+## The Problem
+
+When it comes to error handling in asynchronous JavaScript, most developers default to wrapping code in try/catch blocks. But as I recently discovered, this approach can be too simplistic when dealing with complex error scenarios that have cascading effects on downstream code. Let me walk you through my journey of refactoring error handling for user authentication flows, and the insights I gained along the way.
+
+### Overly Broad Error Handling
+
+I started with this standard pattern—a try/catch block that treated all errors the same way:
+
+```javascript
+try {
+	const token = await getToken();
+
+	const profile = await wretch(`${USER_SERVICE_BASE}/profile`)
+		.auth(token)
+		.get()
+		.json();
+	...
+} catch (error) {
+	console.error(error);
+	requireLoginFn();
+}
+```
+
+The problem with this approach? There were multiple potential points of failure, each requiring different handling:
+
+1. **Authentication Failures:** The call to resolve the authentication token could fail because the user is no longer authenticated.
+2. **Fetching Failures:** Fetching a user profile can fail for many reasons: the request might be unauthenticated or lack proper authorisation; network issues could disrupt communication; the endpoint might be incorrect or unavailable; the request could be malformed (e.g., missing parameters or invalid headers); or the server could encounter internal errors or be temporarily overloaded.
+
+For **1**, re-authentication makes sense after an authentication error. But for **2**, this approach doesn't fit the wide range of possible errors.
+
+### The Fix? More Granular Error Handling
+
+I extracted the profile fetching logic to handle different error scenarios more explicitly:
+
+```javascript
+async function fetchUserAttributes(token, requireLogin) {
+	const response = await wretch(`${USER_SERVICE_BASE}/profile`)
+		.auth(token)
+		.get()
+		.timeout(10000)
+		.unauthorized(() => {
+			requireLogin();
+		})
+		.notFound((err) => {
+			throw new Error("User attributes endpoint not found", err);
+		})
+		.internalError((err) => {
+			throw new Error("Server error while fetching user attributes", err);
+		})
+		.json();
+
+	if (!response || typeof response !== "object") {
+		throw new Error("Invalid response format from user attributes");
+	}
+
+	return response;
+}
+```
+
+This improved approach allowed me to handle specific HTTP error codes differently. But I soon discovered a subtle issue...
+
+### But, Think! A Lesson In Considering Code Execution Flow
+
+I wanted to test that if we encountered an unauthorised error that we would force the user to the log in page. I was able to achieve this by writing a custom middleware which simulated an unauthorised response.
+
+```javascript
+const forceUnauthorizedMiddleware = next => (url, opts) => {
+  return Promise.resolve(
+    new Response(JSON.stringify({ error: 'Unauthorized' }), {
+      status: 401,
+      headers: { 'Content-Type': 'application/json' }
+    })
+  );
+};
+
+async function fetchUserProfile(token, requireLogin) {
+  try {
+    const response = await wretch(`${USER_SERVICE_BASE}/profile`)
+      .middlewares([forceUnauthorizedMiddleware])
+      .auth(token)
+      .get()
+      .timeout(10000)
+      .unauthorized(err => {
+        console.error('User is not authenticated', err);
+        requireLogin();
+      })
+      ...,
+      .json();
+
+    if (!response || typeof response !== 'object') {
+      throw new Error('Invalid response format from required login actions');
+    }
+
+    return response;
+  } catch (error) {
+    console.error('Error fetching required login actions:', error);
+    throw error;
+  }
+}
+```
+
+When I tested this, I expected to see the login screen appear with a console error message about authentication. Instead, I got an Unhandled Promise Rejection and a different error message.
+
+The issue was subtle but important: the `.unauthorized()` handler in wretch doesn't stop the promise chain. When `requireLogin()` was called, it redirected the user synchronously, but the code continued executing. Since the handler didn't return anything, the `.json()` method received `undefined`, which then failed our validation check and threw a different error.
+
+```javascript
+throw new Error("Invalid response format from required login actions");
+```
+
+Which is picked up, logged to the console, and re-thrown, which is the cause for our Unhandled Promise Rejection error.
+
+```javascript
+catch (error) {
+	console.error('Error fetching required login actions:', error);
+	throw error;
+}
+```
+
+This led to my first major insight: **When handling errors in promise chains, you need to consider what happens to the entire chain after your handler runs.**
+
+I didn't expect to hit this block. To handle the unauthorized error with requireLogin, I had to rethink how the code runs. Since more code still executes afterward, I need to take that into account and handle the error in a way that fits the bigger picture.
+
+#### Contextual Ways To Handle Errors
+
+**1. Return a Valid Value That Passes Downstream Validation**
+
+Since we'll evaluate the response later, returning an empty object keeps the downstream code running without errors and avoids triggering the catch block.
+
+```javascript
+      .unauthorized(err => {
+        console.error('User is not authenticated', err);
+        requireLogin();
+        return {};
+      })
+      ...,
+      .json();
+
+    if (!response || typeof response !== 'object') {
+      throw new Error('Invalid response format from required login actions');
+    }
+
+    return response;
+    ...
+```
+
+This approach works but feels like it's leaving too much to chance. We're hoping the redirect happens before any subsequent code that uses the returned value does anything problematic.
+
+**2. Make the Function Hang**
+
+```javascript
+.unauthorized(err => {
+  console.error('User is not authenticated', err);
+  requireLogin();
+  return new Promise(() => {}); // Return a promise that never resolves
+})
+```
+
+This guarantees nothing else happens in this execution context, but introducing hanging promises feels unsafe for overall application stability.
+
+**3. Re-throw a Specific Error to Be Caught Later**
+
+```javascript
+.unauthorized(err => {
+  console.error('User is not authenticated', err);
+  requireLogin();
+  throw new Error('User is not authenticated');
+})
+
+// Then in the catch block:
+catch (error) {
+  if (error.message === 'User is not authenticated') {
+    return; // Already handled
+  }
+  console.error('Error fetching required login actions:', error);
+  throw error;
+}
+```
+
+We could throw an error in the unauthorized handler to stop downstream code and let the catch block handle it. But I don't like this approach—it means leaving a place where we already understood the error, only to rebuild that same context later. It feels like unnecessary double handling, even if it clearly stops execution and handles the case.
+
+**4. Early Return Pattern with a Flag**
+
+```javascript
+async function fetchUserProfile(token, requireLogin) {
+	let authHandled = false;
+
+	const response = await wretch(`${USER_SERVICE_BASE}/profile`)
+		.unauthorized((err) => {
+			console.error("User is not authenticated", err);
+			requireLogin();
+			authHandled = true;
+			return {};
+		})
+		// Other error handlers check the flag
+		.json();
+
+	// Early exit if auth was handled
+	if (authHandled) return null;
+
+	// Normal validation and processing
+	if (!response || typeof response !== "object") {
+		throw new Error("Invalid response format");
+	}
+
+	return response;
+}
+```
+
+This approach makes the control flow explicit but adds complexity and still potentially returns `null` to callers, which might cause issues downstream.
+
+I ultimately chose to return an empty object (#1) and ensure validation passes, although this felt like a compromise rather than an ideal solution.
+
+### But, Think Again! Another Lesson In Considering Code Execution Flow
+
+Later, I encountered another issue when testing for an unauthenticated user scenario. I had removed the try/catch block and refactored the code to handle token errors inline:
+
+```javascript
+const token = await getToken().catch((error) => {
+	console.error(error);
+	requireLogin();
+	return null;
+});
+
+const profile = await wretch(`${USER_SERVICE_BASE}/profile`).auth(token).get().json();
+// ...
+```
+
+The problem? I wasn't considering what would happen when `token` was `null`. The code would still attempt to make the profile request with a null token, causing cryptic errors downstream.
+
+The solution was straightforward—check if we actually have a token before proceeding:
+
+```javascript
+const token = await getToken().catch((error) => {
+	console.error(error);
+	requireLogin();
+	return null;
+});
+
+if (token != null) {
+	const profile = await wretch(`${USER_SERVICE_BASE}/profile`).auth(token).get().json();
+	// ...
+}
+```
+
+## Key Lessons About Error Handling
+
+Through this refactoring journey, I learned several important principles about error handling in asynchronous JavaScript:
+
+1. **Consider execution flow after error handlers**: Error handlers don't automatically stop code execution; you need to explicitly manage what happens next.
+2. **Be mindful of what your error handlers return**: Values returned from error handlers flow into downstream code and can cause cascading issues if they don't meet expectations.
+3. **Balance specificity with simplicity**: While granular error handling is good, too much complexity can make code harder to follow. Sometimes an early return or basic validation is cleaner than elaborate flag systems.
+4. **Think beyond the immediate error**: Consider not just how you handle the error at the point of failure, but how that handling affects the rest of your application flow.
+
+By following these principles, I was able to refactor the error handling to be both more specific and more robust, while maintaining clean code that properly manages the flow of execution in error scenarios.
+
+Compared to our original approach:
+
+```javascript
+try {
+	const token = await getToken();
+
+	const profile = await wretch(`${USER_SERVICE_BASE}/profile`).auth(token).get().json();
+	// ...
+} catch (error) {
+	console.error(error);
+	requireLoginFn();
+}
+```
+
+Our new approach handles errors more discretely and with greater consideration for downstream effects:
+
+```javascript
+const token = await getToken().catch((error) => {
+	console.error(error);
+	requireLogin();
+	return null;
+});
+
+if (token != null) {
+	const profile = await fetchUserProfile(token, requireLogin);
+	// Continue with valid profile...
+}
+```
+
+Error handling isn't just about catching exceptions—it's about thoughtfully managing the entire control flow of your application in both success and failure scenarios.
