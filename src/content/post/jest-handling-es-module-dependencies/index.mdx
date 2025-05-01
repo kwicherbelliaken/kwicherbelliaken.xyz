@@ -1,0 +1,102 @@
+---
+title: "Jest: Handling ES Module Dependencies"
+description: "How to configure Jest to work with ESM-only libraries like jose, including the necessary transformer and TypeScript settings."
+publishDate: 30 April 2025
+updatedDate: 01 May 2025
+tags: ["testing", "jest"]
+---
+
+import CaptionedImage from "@/components/CaptionedImage.astro";
+import errorImage from "./error.png";
+
+## The Problem
+
+While writing tests for a project, I hit a snag when importing a function from the [jose](https://github.com/panva/jose) library—a modern, ESM-only crypto toolkit.
+
+```typescript title="test.tsx"
+import { compactDecrypt } from "jose";
+```
+
+When running the test, Jest threw an error.
+
+<CaptionedImage
+	src={errorImage}
+	alt="Jest error when importing ESM-only library"
+	caption="Jest throws an error when trying to import from 'jose', an ESM-only library, because Jest needs special configuration to handle ES modules."
+/>
+
+## Understanding The Root Cause
+
+The cause of this error is pretty simple. Jest does not have native support for interpreting ES modules, which `jose` is distributed as.
+
+### Why Jest Needs Transformers
+
+Jest needs transformers like `babel` or `ts-jest` to run JSX, TypeScript, and newer JavaScript syntax (features). Setting them up properly often requires extra plugins or presets. Jest relies on these transformers to preprocess files before execution:
+
+This transformation can also be required for taking newer ES6 syntax and compiling it down to a format that Jest and the Node JS runtime it operates in to an interpretable format
+
+1. **JSX:** JSX syntax (used in React) isn't valid JavaScript and needs to be transformed into standard JavaScript function calls before execution.
+2. **TypeScript:** Must be transpiled to JavaScript.
+3. **Modern JavaScript (ES6+):** > New syntax supports features like async/await and optional chaining, but not all runtimes understand it. So it's important to use a transformer that compiles it down into a format that Jest and the Node runtime it operates in can interpret.
+4. **ES Modules:** Different module resolution strategies. The way modules are resolved brings in modern syntax (like import/export) that the runtime might not understand directly — which is why a transformer is needed.
+5. **Non-JS Assets:** Static assets like images, icons.
+
+By default, transformers ignore files in node_modules because most libraries provide a CommonJS build. But some, like `jose`, do not make this affordance--which causes the error above.
+
+## The Fix
+
+### Step 1: Configure Transformers To Handle ESM Library
+
+To fix this, we tell the transformers to process `jose` much the same as they do our own application code.
+
+The first change we needed to make was in our `jest.config.js`, where we told `ts-jest`, Jest's transpile or transform tool, to **not** ignore the `jose` dependency and to process it.
+
+```javascript title="jest.config.js" ins={4}
+module.exports = {
+  preset: 'ts-jest',
+  ...,
+  transformIgnorePatterns: ['/node_modules/(?!(jose)/)'],
+  ...,
+};
+```
+
+### Step 2: Use The Right Preset For JavaScript
+
+By default, `ts-jest` doesn't process JavaScript files. But all our `node_modules` are bundled as JavaScript—just in varying formats like CommonJS or ESM, and with different syntax. So, we needed a preset that supports compiling JavaScript files.
+
+```javascript title="jest.config.js" ins={4}
+module.exports = {
+  preset: 'ts-jest/presets/js-with-ts',
+  ...,
+  transformIgnorePatterns: ['/node_modules/(?!(jose)/)'],
+  ...,
+};
+```
+
+### Step 3: Configure TypeScript To Process JavaScript Files
+
+Finally, to make this work, we needed to configure the TypeScript compiler (used by `ts-jest`) to also process JavaScript files.
+
+```json title="tsconfig.json"
+{
+  "compilerOptions": {
+    ...,
+    "allowJs": true
+  },
+  ...,
+}
+```
+
+## Summary
+
+So, in summary, for Jest to be able to handle ESM libraries we needed to:
+
+1. **Explicitly told Jest** which ESM libraries need transformation.
+2. **Used the right preset** that can handle both TypeScript and JavaScript files.
+3. **Configured TypeScript** to process JavaScript files from node_modules.
+
+## References
+
+1. [Work with ES Modules in Jest using Babel](https://jgrivera.hashnode.dev/work-with-es-modules-in-jest-using-babel)
+2. [Jest documentation on transformers](https://jestjs.io/docs/configuration#transform-objectstring-pathtotransformer--pathtotransformer-object)
+3. [ts-jest configuration options](https://kulshekhar.github.io/ts-jest/docs/getting-started/options)
