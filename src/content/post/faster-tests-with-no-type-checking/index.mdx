@@ -1,0 +1,168 @@
+---
+title: "Faster Tests With No Type Checking"
+description: "Speed up ts-jest tests 43% by skipping type checking during runs"
+publishDate: 24 May 2025
+updatedDate: 30 May 2025
+tags: ["jest", "performance"]
+---
+
+import okToSkipTypeCheckingImg from "./ok-to-disable-type-checking.png";
+import isolatedModulesInTSJest from "./isolatedModules-in-ts-jest.png";
+import transpileOnlyForTypeScript from "./transpileOnly-for-typescript.png";
+
+import CaptionedImage from "@/components/CaptionedImage.astro";
+import TLDRSection from "@/components/TLDRSection.astro";
+
+<TLDRSection>
+	Type checking tests is a big contributor to long running tests. If using `ts-jest`, you can
+	dramatically speed them up by creating a test-specific `tsconfig.test.json` with
+	`"isolatedModules": true`, which skips type checking during tests. You'll still get type safety
+	through your IDE, pre-commit hooks, and CI pipeline—just not during test runs. This simple config
+	change can cut test runtime in half or more.
+</TLDRSection>
+
+## The Results
+
+Isn't this what everyone came here for?
+
+With this change tests run **43.52%** faster.
+
+**Before**
+
+```
+Test Suites: 1 failed, 2 passed, 3 total
+Tests:       1 failed, 12 passed, 13 total
+Snapshots:   0 total
+Time:        58.508 s
+```
+
+**After:**
+
+```
+Test Suites: 3 passed, 3 total
+Tests:       13 passed, 13 total
+Snapshots:   0 total
+Time:        33.043 s, estimated 59 s
+```
+
+## Introduction
+
+Woah! Skip type checking—are you crazy? Hear me out. I’m not saying we should skip type checking test code altogether, just that we don’t need to do it when we’re actually running the tests.
+
+We've all seen tests that run slowly, but we just live with them because they’re not offensive enough to fix. This post builds on a previous post about debugging Jest ([[Node Debugging Jest Test]]), focusing on how to speed up unit tests by rethinking how we use TypeScript in the context of a test runner.
+
+In [[Node Debugging Jest Test]], we saw that a lot of test time was spent with Jest sitting idle. The reason for this idleness is that the TypeScript compiler is busy safely turning our TypeScript code into JavaScript that Jest—and the Node runtime it runs on—can understand. The TypeScript compiler has two workflows: linting or type checking and transpilation.
+
+By instructing the compiler to not perform type checking we can dramatically improve the performance of our tests.
+
+## Skip Type Checking When Testing
+
+### Why Is This a Good Idea?
+
+Why do I think this is a good idea? Because the trade off between faster running tests and type checking advantages the former. Assuming we do eventually perform type checking of our test code somewhere in our development workflow—likely as a linting job, run as a pre-commit hook, and in CI as a pre-build step—then I think we’re fine to do this. This is also backed up by our IDE reporting any type errors in whatever test file we’re working in.
+
+I still think we should type check our test code. I just don't think it needs to happen as part of the test itself. I echo the sentiment made below.
+
+<CaptionedImage
+	src={okToSkipTypeCheckingImg}
+	alt="Reasons to not type check tests"
+	caption="https://github.com/kulshekhar/ts-jest/issues/822"
+/>
+
+### How to Do This?
+
+Importantly--as will become apparent in future sections--it should be noted that I made this change to a project that was using `ts-jest`, which lets Jest run TypeScript code by compiling it in the background, so you can write your tests in TypeScript without needing a separate build step.
+
+```javascript title="jest.config.js"
+/* eslint-env node */
+module.exports = {
+  preset: 'ts-jest',
+  ...
+};
+```
+
+There are, of course, alternatives to `ts-jest`. Babel with a TypeScript preset is a common one, and so is esbuild. But unlike `ts-jest`, these tools only transpile TypeScript—they don’t do any type checking. They use their own transpilers, while `ts-jest` uses the TypeScript compiler, which, as mentioned above, does a lot more than just transpile the code.
+
+Basically, there are two ways to compile TS code to JS when calling the TypeScript compiler programmatically:
+
+- `transpileModule` is a quick, simple way to transpile a single file, but it doesn’t deeply check imports or module relationships.
+- `createProgram` with `program.emit` sets up a full compiler with more context and diagnostics. When used with transformers, it gives access to the TypeChecker, which understands cross-module references—like which class a reference points to. This extra context can be very helpful.
+
+If we limit the activity of `ts-jest` to just transpilation, same as Babel and esbuild, we can dramatically lower the total test execution time. Fortunate for us, `ts-jest` exposes a flag through TypeScript's compiler options that allows us to do this: `isolatedModules`.
+
+```json title="tsconfig.test.json"
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"types": ["jest", "node"],
+		"isolatedModules": true
+	},
+
+	"include": ["**/*.test.ts"],
+	"exclude": ["node_modules", "dist"]
+}
+```
+
+By passing [this flag](https://kulshekhar.github.io/ts-jest/docs/getting-started/options/isolatedModules/), `ts-jest` disables full type checking by compiling each file independently using TypeScript's transpileModule API. It does not mount the full TypeScript program and instead treats each file as an isolated module, much the same as other transpilers approach the work.
+
+However, there is an incredible amount of confusion to be had about just what this flag is doing.
+
+## Why This Works (And Why It's Confusing)
+
+Here's where things get tricky: `isolatedModules` means different things in different contexts.
+
+The way the `ts-jest` maintainers designed this API is really confusing. In TypeScript itself, the `--isolatedModules` flag does something different, and I think there’s a lot of confusion because of that. It seems like the maintainers misunderstood what the flag is meant to do and built behaviour around it that doesn’t match how the TypeScript compiler handles it. Instead of creating their own flag—like a `--transpileOnly` option in their own config—they reused `--isolatedModules` and changed what it means. That’s a bad move, because it makes their API look like it supports standard TypeScript options, but then those options behave differently.
+
+### --isolatedModules In TypeScript
+
+**In TypeScript** `--isolatedModules` is a supportive option that warns you about TypeScript code that won’t work well with single-file transpilers like Babel. Its purpose is to give helpful feedback when you’re using a transpile-only build tool to manage your TypeScript. A explanation of this use case can be found in the [official documentation](https://www.typescriptlang.org/docs/handbook/babel-with-typescript.html#type-checking-and-dts-file-generation) and in an explanation given by [Matt Pocock](https://www.totaltypescript.com/workshops/typescript-pro-essentials/configuring-typescript/understanding-isolated-modules-in-typescript). Verbatim:
+
+> `--isolatedModules` disables or brings to attention behaviour that can only be compiled by TypeScript--by something that understands the whole type system.
+>
+> ... Using **isolated modules** in TypeScript is a smart default because it makes your code more portable across different systems and bundlers. It slightly limits some features (like declare const enum), but provides extra safety. The TypeScript documentation even recommends avoiding const enum declarations. Overall, isolated modules help ensure your code stays compatible and reliable when switching tools.
+>
+> [Understanding Isolated Modules in TypeScript](https://www.totaltypescript.com/workshops/typescript-pro-essentials/configuring-typescript/understanding-isolated-modules-in-typescript)
+
+### --isolatedModules In ts-jest
+
+**In ts-jest** `--isolatedModules` definitively skips type checker and means the TypeScript compiler only transpiles our code.
+
+<CaptionedImage
+	src={isolatedModulesInTSJest}
+	alt="Confusion around isolatedModules flag in ts-jest"
+	caption="https://github.com/kulshekhar/ts-jest/issues/4859"
+/>
+
+## Looking Forward
+
+There are many other examples of people raising concerns about how long the type checking process takes.
+
+In the issue below, `dtinth` asks for a `--transpileOnly` option, similar to what `ts-node` exposes, to use the TypeScript compiler without type checking. Since TypeScript v5.5, a `--noCheck` flag has been added that does exactly that. The same ask is made [here](https://github.com/TypeStrong/discussions/issues/1#issuecomment-349834885).
+
+<CaptionedImage
+	src={transpileOnlyForTypeScript}
+	alt="transpileOnly flag for TypeScript"
+	caption="https://github.com/microsoft/TypeScript/issues/29651"
+/>
+
+For library authors and monorepo maintainers, also consider the newer `--isolatedDeclarations` flag, which can provide additional performance benefits during builds.
+
+## Conclusion
+
+You don’t need to overhaul your whole setup to speed up your TypeScript tests. A small config tweak can make them run way faster, without sacrificing code quality—since type checking still happens elsewhere.
+
+The main idea is that test speed and type safety play different roles in your workflow. If you optimise them separately, you get the best of both worlds: fast feedback while coding and solid type checks where they matter most.
+
+## References
+
+[IsolatedModules](https://www.typescriptlang.org/tsconfig/#isolatedModules) Official TypeScript on the `--isolatedModules` flag.
+
+[Support single-module transpilation mode](https://github.com/Microsoft/TypeScript/issues/2499) This is where the `--isolatedModules` proposal first appears.
+
+[Feature Request: Typescript support](https://github.com/parcel-bundler/parcel/issues/3#issuecomment-349534073) The same comparison to `ts-node` offering a `--transpileOnly` option is made here.
+
+[The `--noCheck` option](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-6.html) Official documentation for the `--noCheck` option.
+
+[tsconfig.json](https://2ality.com/2025/01/tsconfig-json.html) An example, documented `tsconfig.json`.
+
+[Faster TypeScript builds with --isolatedDeclarations](https://gitnation.com/contents/faster-typescript-builds-with-isolateddeclarations) A useful performance boost if writing libraries or working in a monorepo.
