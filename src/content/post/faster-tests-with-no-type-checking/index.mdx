@@ -49,9 +49,9 @@ Time:        33.043 s, estimated 59 s
 
 Woah! Skip type checking—are you crazy? Hear me out. I’m not saying we should skip type checking test code altogether, just that we don’t need to do it when we’re actually running the tests.
 
-We've all seen tests that run slowly, but we just live with them because they’re not offensive enough to fix. This post builds on a previous post about debugging Jest ([[Node Debugging Jest Test]]), focusing on how to speed up unit tests by rethinking how we use TypeScript in the context of a test runner.
+We've all seen tests that run slowly, but we just live with them because they’re not offensive enough to fix. This post builds on a previous post about debugging Jest ([Node Debugging Jest Test](/posts/node-debugging-jest-test/)), focusing on how to speed up unit tests by rethinking how we use TypeScript in the context of a test runner.
 
-In [[Node Debugging Jest Test]], we saw that a lot of test time was spent with Jest sitting idle. The reason for this idleness is that the TypeScript compiler is busy safely turning our TypeScript code into JavaScript that Jest—and the Node runtime it runs on—can understand. The TypeScript compiler has two workflows: linting or type checking and transpilation.
+In [Node Debugging Jest Test](/posts/node-debugging-jest-test/), we saw that a lot of test time was spent with Jest sitting idle. The reason for this idleness is that the TypeScript compiler is busy safely turning our TypeScript code into JavaScript that Jest—and the Node runtime it runs on—can understand. The TypeScript compiler has two workflows: linting or type checking and transpilation.
 
 By instructing the compiler to not perform type checking we can dramatically improve the performance of our tests.
 
