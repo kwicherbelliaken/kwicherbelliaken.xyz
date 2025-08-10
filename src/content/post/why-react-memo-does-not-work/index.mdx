@@ -1,0 +1,72 @@
+---
+title: "Why React Memoisation Usually Doesn't Work"
+description: "Why React memoisation rarely pays off unless everything is memoised, how referential stability breaks useMemo/useCallback, and what to do instead."
+publishDate: 10 Aug 2025
+updatedDate: 10 Aug 2025
+tags: ["react", "performance"]
+---
+
+## Introduction
+
+In React, a component re-renders in response to one of [three conditions](https://www.developerway.com/posts/how-to-write-performant-react-code):
+
+- It's parent has re-rendered.
+- It's local state has updated.
+- It's context, or the state within the provider, has updated.
+
+Sometimes, the cost to re-render can be expensive and be the cause for a performance bottleneck. This is a problem that memoisation can solve.
+
+## The All-Or-Nothing Problem
+
+For memoisation to be effective in a React application, an [all-or-nothing](https://adevnadia.medium.com/how-to-usememo-and-usecallback-you-can-remove-most-of-them-b8ef01b2020d) approach must be taken. Memoisation only works [**when every single prop and the component itself are memoized**. Everything else is just a waste of memory and unnecessarily complicates your code](https://adevnadia.medium.com/how-to-usememo-and-usecallback-you-can-remove-most-of-them-b8ef01b2020d).
+
+This constraint is why memoisation, through use of `useMemo` and `useCallback` hooks, is an ineffective and largely unrecommended technique.
+
+Lets have a look at some examples.
+
+### Broken Memoisation Example
+
+```typescript
+function Library({ books }: { books: Array<string> }) {
+  const reserveBook = useCallback(() => {
+    // some operation for reserving a book
+  }, [books]);
+
+  return <LibraryCheckout reserveBook={reserveBook} />;
+}
+```
+
+Job done, right? Not quite. There are actually two problems here that mean we have not achieved proper, effective memoisation.
+
+1. **The `LibraryCheckout` component isn't memoised**, so it will re-render every time `Library` re-renders, regardless of our `useCallback`.
+2. **The `books` prop might not be referentially stable.** We have no confidence that the `books` prop we have passed as an item to the internal dependency array of our `useCallback` is referentially stable. If it isn't memoised itself, the `useCallback` hook is contributing nothing because it will be re-run each time `books` updates. React uses Object.is to compare dependency array props. In order for the `reserveBook` callback to remain memoised, `books`, must also be memoised because it is not a primitive and therefore redeclaring it can change its reference.
+
+`1` is an easy solve. We just wrap the component in `.memo`. [React will skip rendering that component (and its children) if its props are unchanged. This will certainly achieve the same result as changing the component composition, but it's a lot easier to break in the future](https://tkdodo.eu/blog/the-uphill-battle-of-memoization).
+
+```typescript
+function Library({ books }: { books: Array<string> }) {
+  const reserveBook = useCallback(() => {
+    // some operation for reserving a book
+  }, [books]);
+
+  return <MemoisedLibraryCheckout reserveBook={reserveBook} />;
+}
+
+function LibraryCheckout({ reserveBook }: { reserveBook: () => void }) {...};
+
+function MemoisedLibraryCheckout = useMemo(LibraryCheckout);
+```
+
+`2` is much harder. It requires us to climb the component tree, adventure beyond the scope of the component we are actually concerned with, to see whether or not our `books` prop is properly memoised. **This is a great illustration of why memoisation is a flunky technique.**
+
+To foot stamp the ineffectiveness of this type of memoisation, what if `books` itself was itself the product of another potentially referentially unstable prop? We'd have to walk further up the tree, further from our initial point of inspection and point of memoisation. We are forced to travel an indeterminate memoisation chain.
+
+The job to achieve effective, workable memoisation is completely indeterminate. And if anyone makes a change to the props passed to any other these components without considering memoisation then all this effort is wasted. [Memoisation is incredibly fragile](https://tkdodo.eu/blog/the-useless-use-callback). It requires you to understand context and rules far beyond the component you are actively coding in.
+
+## References
+
+[Why we memo all the things](https://attardi.org/why-we-memo-all-the-things/) The all-or-nothing cost of using Reacts idiomatic solution for memoisation.
+
+[How to write performant React code](https://www.developerway.com/posts/how-to-write-performant-react-code) Nadia produces some of the best React performance related content on the Interwebs.
+
+[The useless useCallback](https://tkdodo.eu/blog/the-useless-use-callback) This triggered me to write this. Dominique does a good job of highlighting the fragile and indeterminate memoisation chain.
