@@ -1,8 +1,8 @@
 ---
 title: "Why React Memoisation Usually Doesn't Work"
-description: "Why React memoisation rarely pays off unless everything is memoised, how referential stability breaks useMemo/useCallback, and what to do instead."
+description: "Why React memoisation rarely pays off unless everything is memoised, how referential stability breaks useMemo/useCallback."
 publishDate: 10 Aug 2025
-updatedDate: 10 Aug 2025
+updatedDate: 15 Aug 2025
 tags: ["react", "performance"]
 ---
 
@@ -18,7 +18,7 @@ Sometimes, the cost to re-render can be expensive and be the cause for a perform
 
 ## The All-Or-Nothing Problem
 
-For memoisation to be effective in a React application, an [all-or-nothing](https://adevnadia.medium.com/how-to-usememo-and-usecallback-you-can-remove-most-of-them-b8ef01b2020d) approach must be taken. Memoisation only works [**when every single prop and the component itself are memoized**. Everything else is just a waste of memory and unnecessarily complicates your code](https://adevnadia.medium.com/how-to-usememo-and-usecallback-you-can-remove-most-of-them-b8ef01b2020d).
+For memoisation to be effective in a React application, an [all-or-nothing](https://adevnadia.medium.com/how-to-usememo-and-usecallback-you-can-remove-most-of-them-b8ef01b2020d) approach must be taken. Memoisation only works [**when every single non-primitive prop and the component itself are memoized**. Everything else is just a waste of memory and unnecessarily complicates your code](https://adevnadia.medium.com/how-to-usememo-and-usecallback-you-can-remove-most-of-them-b8ef01b2020d).
 
 This constraint is why memoisation, through use of `useMemo` and `useCallback` hooks, is an ineffective and largely unrecommended technique.
 
@@ -26,7 +26,7 @@ Lets have a look at some examples.
 
 ### Broken Memoisation Example
 
-```typescript
+```typescript title="unmemoised-component.tsx"
 function Library({ books }: { books: Array<string> }) {
   const reserveBook = useCallback(() => {
     // some operation for reserving a book
@@ -39,11 +39,13 @@ function Library({ books }: { books: Array<string> }) {
 Job done, right? Not quite. There are actually two problems here that mean we have not achieved proper, effective memoisation.
 
 1. **The `LibraryCheckout` component isn't memoised**, so it will re-render every time `Library` re-renders, regardless of our `useCallback`.
-2. **The `books` prop might not be referentially stable.** We have no confidence that the `books` prop we have passed as an item to the internal dependency array of our `useCallback` is referentially stable. If it isn't memoised itself, the `useCallback` hook is contributing nothing because it will be re-run each time `books` updates. React uses Object.is to compare dependency array props. In order for the `reserveBook` callback to remain memoised, `books`, must also be memoised because it is not a primitive and therefore redeclaring it can change its reference.
+2. **The `books` prop might not be referentially stable.** We have no confidence that the `books` prop we have passed as an internal dependency to our `useCallback` is referentially stable. If it isn't memoised itself, the `useCallback` hook is contributing nothing because it will be re-run each time `books` updates. React uses [Object.is](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is) to compare dependency array props. In order for the `reserveBook` callback to remain memoised, `books` must also be memoised because it is not a primitive and therefore redeclaring it can change its reference.
 
-`1` is an easy solve. We just wrap the component in `.memo`. [React will skip rendering that component (and its children) if its props are unchanged. This will certainly achieve the same result as changing the component composition, but it's a lot easier to break in the future](https://tkdodo.eu/blog/the-uphill-battle-of-memoization).
+`1` is an easy solve. We just wrap the component in `.memo`. React will skip rendering that component (and its children) if its props are unchanged.
 
-```typescript
+```typescript title="memoised-component.tsx"
+import { memo } from "react";
+
 function Library({ books }: { books: Array<string> }) {
   const reserveBook = useCallback(() => {
     // some operation for reserving a book
@@ -54,14 +56,34 @@ function Library({ books }: { books: Array<string> }) {
 
 function LibraryCheckout({ reserveBook }: { reserveBook: () => void }) {...};
 
-function MemoisedLibraryCheckout = useMemo(LibraryCheckout);
+function MemoisedLibraryCheckout = memo(LibraryCheckout);
 ```
 
 `2` is much harder. It requires us to climb the component tree, adventure beyond the scope of the component we are actually concerned with, to see whether or not our `books` prop is properly memoised. **This is a great illustration of why memoisation is a flunky technique.**
 
 To foot stamp the ineffectiveness of this type of memoisation, what if `books` itself was itself the product of another potentially referentially unstable prop? We'd have to walk further up the tree, further from our initial point of inspection and point of memoisation. We are forced to travel an indeterminate memoisation chain.
 
-The job to achieve effective, workable memoisation is completely indeterminate. And if anyone makes a change to the props passed to any other these components without considering memoisation then all this effort is wasted. [Memoisation is incredibly fragile](https://tkdodo.eu/blog/the-useless-use-callback). It requires you to understand context and rules far beyond the component you are actively coding in.
+```typescript title="memoised-component-unmemoised-prop.tsx" {2, 10} ins={3}
+function City() {
+  // ⚠️ We'd have to memoise books.
+  const books = ["The Great Gatsby", "1984", "To Kill a Mockingbird"];
+
+  return (
+    <Library books={books} />
+  )
+}
+
+// ⚠️ We'd have to "memo" the Library component.
+function Library({ books }: { books: Array<string> }) {
+  const reserveBook = useCallback(() => {
+    // some operation for reserving a book
+  }, [books]);
+
+  return <MemoisedLibraryCheckout reserveBook={reserveBook} />;
+}
+```
+
+The job to achieve effective, workable memoisation is completely indeterminate. And if anyone makes a change to the props passed to any other these components without considering memoisation then all this effort is wasted. [Memoisation is incredibly fragile](https://tkdodo.eu/blog/the-useless-use-callback) and it is [easy to break in the future](https://tkdodo.eu/blog/the-uphill-battle-of-memoization). It requires you to understand context and rules far beyond the component you are actively coding in.
 
 ## References
 
