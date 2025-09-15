@@ -1,0 +1,64 @@
+---
+title: "Business Requirements, Systems, & Black Boxes"
+description: "A framework for navigating between business context, system architecture, and implementation details. Important to strategic thinking in software engineering."
+publishDate: 10 September 2025
+updatedDate: 12 September 2025
+tags: ["engineering"]
+---
+
+import TLDRSection from "@/components/TLDRSection.astro";
+
+<TLDRSection>
+	Exceptional engineers distinguish themselves by fluidly switching between three levels of
+	abstraction: **business layer** (stakeholder needs and outcomes), **system layer** (infrastructure
+	and integrations), and **implementation layer** (technical specifics). Start with "why" before
+	"how", understand stakeholder context before jumping to solution architecture. The ability to
+	navigate these layers and know when to zoom in or pull back is a reliable indicator of engineering
+	leadership potential.
+</TLDRSection>
+
+## Strategic Thinking in Software Engineering
+
+During my years in software engineering, I've observed a critical skill that separates good engineers from exceptional ones: the ability to operate at the appropriate level of abstraction for any given problem. Hitting this sweet spot is my biggest trial as an engineer.
+
+### The Challenge
+
+Recently, during a product strategy discussion, a colleague proposed leveraging existing functionality to address an adjacent use case. While other engineers immediately engaged with the business implications and system boundaries, I initially found myself trapped in implementation minutiae—a place I inhabit all too often, a common trap for engineers who haven't yet developed strategic thinking muscles. I couldn't figure the head or tail of what they were talking about. Mostly because I didn't understand the existing functionality, so could not see how it could be extended to suit application beyond it.
+
+### A Potential Framework
+
+I realised that I need a framework when approaching these types of discussions. I need to **start with stakeholder context, before trying for solution architecture**. It requires realising when a particular lens is appropriate. This is something I touch upon in [Consider The Whole](/posts/consider-the-whole/). Engineering is hard because you're constantly evaluating problems while also evaluating which level of evaluation to use.
+
+#### Primary Questions (Business Layer)
+
+- **Who is the end user and what outcome are they seeking?**
+- What business process does this solve or optimise?
+- How does this align with our product strategy?
+- Do we need to solve this as a core product offering?
+
+#### Secondary Questions (System Layer)
+
+- **Can existing infrastructure handle the proposed solution?**
+- What integration points exist or need to be created?
+- What are the data flow requirements?
+
+#### Tertiary Questions (Implementation Layer)
+
+- **What specific technical modifications are required?**
+- What are the performance and scalability implications?
+
+### Case Study Application
+
+In our specific scenario, the stakeholder was a municipal road maintenance agency requiring automated status updates from our platform to their project management system upon job completion.
+
+Working through the framework:
+
+- **Business layer**: The agency needed a way to get job status updates from contractors using out platform to their oversight system.
+- **System layer**: Required an integration with their existing workflow management tool.
+- **Implementation layer**: Could leverage our existing event system with minimal custom development.
+
+Importantly, each question answered raised further questions. But, these questions segued nicely into the next level of abstraction.
+
+A perfect example of how changeable the lens with which you consider the problem with emerged when we explored which platform to integrate with, seemingly a system level detail. But answering that question forced us back up to a fundamental business decision: should this be a core product feature at all? This is the essence of engineering: constantly jumping between levels of thinking, where a secondary technical question suddenly becomes a primary strategic one. This constant level-jumping is what makes the profession both challenging and interesting.
+
+The ability to fluidly navigate between these abstraction layers, knowing when to zoom in and when to pull back, has become one of the most reliable indicators of engineering leadership potential in my experience.
