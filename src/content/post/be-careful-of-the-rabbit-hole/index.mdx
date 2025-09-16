@@ -1,0 +1,47 @@
+---
+title: "Be Careful of the Rabbit Hole"
+description: "Debugging lessons: understand user problems before hunting for errors, avoid overgeneralisation, develop working theories before gathering evidence."
+publishDate: 10 September 2025
+updatedDate: 12 September 2025
+tags: ["engineering"]
+---
+
+import TLDRSection from "@/components/TLDRSection.astro";
+
+<TLDRSection>
+	When debugging, resist the urge to find patterns where none exist. **Understand the
+	user's problem first** before hunting for errors, **develop working theories** before gathering
+	evidence, and **focus on one case at a time** to avoid confusion. The key insight: finding
+	evidence of an error doesn't automatically lead to understanding the user's experience. Start with
+	"what happened to the user" before "what went wrong in the system."
+</TLDRSection>
+
+## Summary of Experience
+
+We faced two authentication issues for two users. During the investigation of the first issue, I made several mistakes that led me to confuse both problems, believing they were related. This misjudgment allowed me to get distracted by the idea of a larger systemic issue when, in reality, I was overlooking the specifics of each case.
+
+### Mistakes Made
+
+- **Overgeneralisation**: I assumed the two issues were related and searched for a single cause without considering the unique aspects of each case. I jumped to solving a theme of issues instead of the issue immediately before me.
+
+- **Finding Evidence of an Error Instead of Understanding The Problem:** I focused on finding evidence of an error before understanding the user's problem, believing that proof of the error would lead me to the solution. This generally works for our alerts: a failure to perform some isolated operation maps nicely to an error. By finding the error, we can usually determine the problem. However, this approach is ineffective when considering all the possible actions or user misbehaviours that led to their problem. It is often impossible to link an error to the user's experience, making the search for evidence pointless.
+
+- **Collecting Evidence Without a Hypothesis to Test Against**: I was acting impulsively. Instead of focusing my efforts, I wasted time searching for an error to explain the user's issue. I gathered information aimlessly, hoping it would help me form a theory. I should have created a hypothesis first, allowing me to test evidence against it. This approach would have helped me quickly identify incorrect theories and better understand the user's problem.
+
+### Learnings and Future Strategies
+
+Going forward, these are the steps I will take when given a problem to solve. Some steps are **questions** (❓) I need to ask myself while others are **actions** (🏄‍♂️) I need to take.
+
+1. 🏄‍♂️ **Understand the Problem as Experienced by the User**: Figure out what the user was doing when the problem arose. This ensures I capture the contextual details crucial for hypothesis forming and therefore accurate diagnosis.
+
+2. ❓ **Is it Ongoing?**: Quickly verify if the user still has the issue using telemetry tools, assess its impact on others, and escalate if necessary without getting distracted.
+
+3. ❓ **Ask Clarifying Questions**: What information might help me to better understand the problem? Ask questions to get it. This has the important effect of raising visibility to relevant parties that I am working on the issue.
+
+4. 🏄‍♂️ **Devise a Working Theory Before Information Gathering**: Craft a loosely defined working theory to explain the user's issue. This allows me to formulate a basis for further investigation without jumping to conclusions.
+
+5. 🏄‍♂️ **Data Gathering and Hypothesis Testing**: Test my theory against collected evidence.
+
+6. 🏄‍♂️ **Keep Investigation Focused**: I will concentrate on one user issue at a time, treating each case as unique. By focusing on an individual case, the specific actions of the user, I can build a clearer understanding and avoid confusion.
+
+7. 🏄‍♂️ **Take a Breath. Remind Yourself Why You Are Performing a Step:** Take a breath and pause. Remind yourself why you're doing this action. Why are you searching from this angle? What do you hope to find that might help your theory?
