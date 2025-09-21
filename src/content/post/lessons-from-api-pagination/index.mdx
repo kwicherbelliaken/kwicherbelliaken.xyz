@@ -1,0 +1,57 @@
+---
+title: "Lessons Learned From API Pagination"
+description: "Solving AWS Lambda response limits with pagination: mistakes made and insights gained."
+publishDate: 19 September 2025
+updatedDate: 21 September 2025
+tags: ["engineering"]
+---
+
+## Lessons Learned From API Pagination
+
+AWS Lambda sets a 6 MB limit on response size. Recently, requests to a list-all-X endpoint were failing because they exceeded this limit. We fixed this by extending the endpoint to support client driven pagination. There were a few insights had during this process that I thought worth jotting down.
+
+### Key Mistakes
+
+#### Mistake #1: Not Considering the Clients
+
+My first mistake was not designing the solution with the client experience in mind. I focused too heavily on the service implementation without thinking through how external consumers would actually use the pagination feature.
+
+Had I thought of the API from the point-of-view of the client, I would have realised that I offered no mechanism for the client to opt-in to pagination. Well, no method that did not violate the design choice to use opaque pagination tokens.
+
+I initially implemented it so that clients would opt-in by passing a zero index pagination token `v1:0`. This told the server: start from the beginning, give me the first page. This violated the core principle of opaque tokens: clients shouldn't need to understand the token they handle in any way. By making clients aware that `v1:0` was a special "start token," I leaked server-side logic to the client. The purpose of using this strategy is so client stays completely ignorant of what the token means or, in this case, how pagination works.
+
+A colleague made a great suggestion: start with the README. This would have forced me to think about endpoint consumers and required behaviours from the start. Had I done this, thought of the API from the client's point of view, I would have realised I offered no clean mechanism for opting into pagination that didn't violate the design choice to use opaque tokens.
+
+#### Mistake: #2: Misguided Future-Proofing
+
+I made an attempt at future-proofing my solution that was unhelpful in two ways. Firstly, it contradicted our commitment to solve the problem quickly. Secondly, it introduced code that was not being used and therefore served as technical debt.
+
+My choice to future-proof the work went against the commitments we made in our trade-off analysis. By future-proofing, I was doing unnecessary work and broadening the scope beyond what we needed to solve the problem as felt by the customers.
+
+Some background. The database client already paginated its queries, but it aggregated all the results before returning them to the API caller. The pagination just wasn't being driven by the client. It was obvious that the eventual, ideal solution would be to leverage this existing pagination logic and have to client drive it. I became focused on making sure the solution set the groundwork for the future approach, writing it as close to its eventual home as possible.
+
+I thought I was making future work easier, almost like setting a sign post for a future traveller. But there's zero guarantee this sign-post will make sense to anyone but myself, if it ever makes sense to me by the time I get around to the change. Who's to say what could have changed in the meantime and the sign-posted approach mightn't make any sense at all? So all the while it sat there, unused and misunderstood but certainly taking up space and requiring others to understand its irrelevance before they could make changes in the same space. This is especially bad given that the eventual cost of implementing the change is small and isn't reduced by having a premature sign-post.
+
+### Key Insights
+
+#### Trade-Off Analysis
+
+We knew that we were going to expand our API contract to accept an optional pagination token. An ideal solution would have been to dynamically paginate database results through our existing database client. However, this approach required significant changes across multiple services that used this abstraction. This would take time. Time during which customers would continue to be impacted.
+
+We wanted to solve this urgently. So, we chose a crude but fast to implement approach: load the aggregate list of items into memory and paginate the list using the supplied tokens. This was clearly suboptimal since we were loading everything into memory instead of leveraging the database client's existing pagination logic, but it allowed us to ship quickly without breaking existing integrations. We needed to solve a problem and not shift the world to do it.
+
+#### Invest Time in What's Hard to Change Later
+
+I learned this lesson through a stark contrast between two design decisions I made.
+
+In designing the format of the pagination token, a colleague suggested using a prefix to version the token `v1:{number}` where number was the index to page from. The act of choosing this strategy was important because it captured a flexibility that would be extremely helpful in the future. By versioning our pagination tokens from the start, we created a path to evolve from our crude `v1` implementation to something more sophisticated that, for instance, leveraged the existing database level pagination, all without breaking existing clients. Imagine if we introduced new pagination logic managed by `v2:{number}` tokens, we could safely deploy and support clients sending `v1:` tokens because we'd still have the code, they'd just be using an older version of our pagination logic.
+
+To contrast this, in my original attempt at solving this issue, I tried to future-proof the solution by writing the pagination logic as close to where (I thought) it would eventually live. This didn't actually improve the overall solution and if anything made it worse because it introduced technical debt: another something to understand, a something that didn't relate to anything around it. Most importantly, the change I made didn't save us any time. It was implementation logic. It was, by its very nature swappable. It was something easily done when we needed it, not something hard to do later like modifying an API contract. I had confusingly attempted to introduce flexibility into implementation when it only served to be confusing—an artefact of a decision existing only as a "possible TODO" in my own head.
+
+API contracts, once established, are hard to change. Implementation details are swappable by design. The versioned token approach exemplifies this principle: we invested design effort in something that would be expensive to change later (the token format) while keeping implementation flexible. The premature changes I made were somewhat the opposite. They were effort spent on something that was inherently easy to change when needed.
+
+## Conclusion
+
+While our immediate solution was suboptimal from a performance perspective, it solved the customer problem quickly and set the stage for future improvements without breaking existing integrations. The experience showed me that sometimes the "wrong" technical solution can be the right business decision, especially when you pair it with thoughtful API design that enables future evolution.
+
+The contrast between what worked (token versioning) and what didn't (future-proofing the solution) taught me where to spend my design energy: on the things that are expensive to change later. By evaluating what is hard to change versus what is inherently flexible, we can make good decisions about what is worth spending our time on.
