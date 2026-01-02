@@ -1,0 +1,200 @@
+---
+title: "Scheduling Repeated Jobs in Effect"
+description: "Why mixing setInterval with Effect fails, and understanding fork vs runFork for shared context."
+publishDate: 02 Jan 2026
+updatedDate: 03 Jan 2026
+tags: ["engineering"]
+---
+
+I'm building a simple game. Part of managing game state means cleaning up expired sessions in the background.
+
+In plain TypeScript, this is trivial:
+
+```typescript
+const checkExpiredGamesInterval = setInterval(
+	() => cleanupExpiredGames(),
+	CHECK_EXPIRED_GAMES_INTERVAL,
+);
+
+function cleanupExpiredGames() {
+	console.info("Cleaning up expired games ...");
+	const games = gameRepository.getAllGames();
+	for (const game of games) {
+		if (game.isExpired()) {
+			gameRepository.deleteGame(game.id);
+		}
+	}
+}
+```
+
+But I was building an [Effect](https://effect.website/) application. I wanted this code to be Effect*ful*. In migrating this code to use Effect I learnt two lessons:
+
+**Lesson One:** When cutting over to a new solution, be careful to not straddle the two worlds unless the glue or overlap is very well defined. Pick one and make it your solution.
+
+**Lesson Two:** Effect has a concept of Fibers and every Effect application needs to be considerate of this concept. I learnt that when running a background operation, `Effect.runFork` creates an isolated runtime while `Effect.fork` inherits from the parent.
+
+## Discovering Lesson One
+
+I converted the code to use Effect. I managed it as a service and tried to make use of Effect's in-built logger.
+
+This was the first hiccup.
+
+```typescript ins={10}
+const make = Effect.gen(function* () {
+	const gameRepository = yield* GameRepository;
+
+	const checkExpiredGamesInterval = setInterval(
+		() => cleanupExpiredGames,
+		CHECK_EXPIRED_GAMES_INTERVAL,
+	);
+
+	function cleanupExpiredGames() {
+		yield * Effect.log("Cleaning up expired games ...");
+
+		const games = gameRepository.getAllGames();
+		for (const game of games) {
+			if (game.isExpired()) {
+				gameRepository.deleteGame(game.id);
+			}
+		}
+	}
+});
+
+export class GameExpiry extends Context.Tag("GameExpiry")<
+	GameExpiry,
+	Effect.Effect.Success<typeof make>
+>() {
+	static readonly Live = Layer.effect(this, make).pipe(Layer.provide(GameRepository.Live));
+}
+```
+
+The problem was that `yield*`, used to handle the logger, only works inside an Effect generator. No problem. I declared the `cleanupExpiredGames` function to use the [Effect.gen utility](https://effect.website/docs/getting-started/using-generators/).
+
+```typescript
+const cleanupExpiredGames = Effect.gen(function* () {
+	yield* Effect.log("Cleaning up games ...");
+});
+```
+
+I re-ran the code. There was no expected log to the console. `cleanupExpiredGames` was not being run as the callback to `setInterval`. This makes sense as what we are passing `setInterval` is no longer a plain function but is an Effect abstraction.
+
+I was trying to glue two paradigms together—JavaScript's `setInterval` and Effect's execution model. Every attempt to bridge them created a new problem. I realised that the best path forward was to lean into using Effects proprietary mechanism for scheduling work: the Schedule API.
+
+I got rid of the `setInterval` and introduced Schedule code.
+
+```typescript ins={16-19}
+const make = Effect.gen(function* () {
+	const gameRepository = yield* GameRepository;
+
+	const action = Effect.gen(function* () {
+		yield* Effect.log("Cleaning up games ...");
+
+		const games = gameRepository.getAllGames();
+
+		for (const game of games) {
+			if (game.isExpired()) {
+				gameRepository.deleteGame(game.id);
+			}
+		}
+	});
+
+	const policy = Schedule.spaced(CHECK_EXPIRED_GAMES_INTERVAL);
+	const program = Effect.repeat(action, policy);
+
+	yield* Effect.runFork(program);
+
+	return;
+});
+
+export class GameExpiry extends Context.Tag("GameExpiry")<
+	GameExpiry,
+	Effect.Effect.Success<typeof make>
+>() {
+	static readonly Live = Layer.effect(this, make).pipe(Layer.provide(GameRepository.Live));
+}
+```
+
+All that was left was to run the program, the same as `setInterval` was executing the callback it was passed. Initially, I opted for using the `runFork` API as the implementation for my use case was close to [identical to the documentation](https://effect.website/docs/getting-started/running-effects/#runfork).
+
+```typescript
+const make = Effect.gen(function* () {
+  ...,
+  yield* Effect.runFork(program);
+});
+```
+
+Unfortunately, this decision led to my second lesson regarding Fibers.
+
+## Discovering Lesson Two
+
+The scheduled job was running—but a custom logger I had configured wasn't being used. Effect was logging to the default console output instead of the logger I'd configured at the application entry point.
+
+Why?
+
+Fibers.
+
+When you call `Effect.runFork`, you create a **new, isolated runtime**. From the [Effect docs](https://effect.website/docs/runtime/):
+
+> "When developing an Effect application and using Effect.run\* functions to execute it, the application is automatically run using the default runtime behind the scenes."
+
+The default runtime has an empty context. No services. No custom logger. Nothing I'd provided upstream.
+
+My `GameExpiry` layer was being run inside the application's runtime, but `Effect.runFork` inside it was escaping that runtime entirely. It was spawning a fiber that had no knowledge of the parent context.
+
+The fix was to replace `runFork` with `fork`.
+
+```typescript
+// ❌ Creates isolated runtime, loses context
+yield * Effect.runFork(program);
+
+// ✅ Creates child fiber within current runtime, inherits context
+//    Child fiber is automatically managed by parent fiber
+yield * Effect.fork(program);
+```
+
+`Effect.fork` creates a child fiber **within the current runtime**. It inherits everything—services, custom loggers, configuration. The [fiber is supervised by its parent](https://effect.website/docs/concurrency/fibers/#fork-with-automatic-supervision). Importantly, this does mean that the lifecycle of the expiry program was now bound to that of its parent, the application as a whole. This was preferred for my use case as I only wanted it to run as a background job during which the main process was still kicking.
+
+This was the final code:
+
+```typescript
+const make = Effect.gen(function* () {
+	const gameRepository = yield* GameRepository;
+
+	const action = Effect.gen(function* () {
+		yield* Effect.log("Cleaning up games ...");
+		const games = gameRepository.getAllGames();
+		for (const game of games) {
+			if (game.isExpired()) {
+				gameRepository.deleteGame(game.id);
+			}
+		}
+	});
+
+	const policy = Schedule.spaced(CHECK_EXPIRED_GAMES_INTERVAL);
+	const program = Effect.repeat(action, policy);
+
+	yield* Effect.fork(program);
+
+	return {};
+});
+
+export class GameExpiry extends Context.Tag("GameExpiry")<
+	GameExpiry,
+	Effect.Effect.Success<typeof make>
+>() {
+	static readonly Live = Layer.effect(this, make).pipe(Layer.provide(GameRepository.Live));
+}
+```
+
+## Conclusion
+
+There were two lessons to be had here.
+
+**One:** Don't straddle two worlds. Mixing `setInterval` with Effect scheduling created friction at every step. The job was simple—there was no reason to maintain a handover point between paradigms. Pick one.
+
+**Two:** `runFork` vs `fork` matters. `Effect.runFork` escapes the current runtime and creates an isolated one with empty context. `Effect.fork` stays within the current runtime, inheriting all dependencies. When you need a child fiber that lives alongside your application and shares its context, use `fork`.
+
+## References
+
+- [runFork](https://effect.website/docs/getting-started/running-effects/#runfork) Official documentation on the runFork API: "The foundational function for running effects". Helped me realise I needed to execute the effect.
+- [run](https://effect.website/docs/concurrency/fibers/#fork-with-automatic-supervision) Spawning a child fiber that is automatically managed by its parent. This ensures context, services, configuration remains available to run process and it is bound to the same runtime as its parent.
