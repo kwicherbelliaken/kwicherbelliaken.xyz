@@ -1,0 +1,195 @@
+---
+title: "How Effect Schema Taught Me Better Software Design"
+description: "A lesson on good software design as figured from using Effect Schema"
+publishDate: 01 Jan 2026
+updatedDate: 03 Jan 2026
+tags: ["engineering"]
+---
+
+I'm building the backend for a very simple multiplayer game using [Effect](https://effect.website/docs/getting-started/introduction/). Through using Effect Schema, I had something of a software design lightbulb moment. The a-ha certainly wasn't innovative—it's a flog-taught, well known pattern. But it hadn't visited me as a truth until I started using Schema.
+
+The lesson: a system is composed of layers with explicit contracts, not a blob of code that just "works". I knew this before. But because of the constraints Schema operates under, I was forced to really consider the purpose of contracts and where they should occur—and that converted knowing into understanding.
+
+## The A-Ha Moment: Schemas as Contracts
+
+Before using Effect in anger, my design decisions followed a familiar rhythm. Write a specification or PRD outlining the broad strokes. Reach for tried and true patterns. Define a class, throw in some methods, hack around what doesn't fit. This works—until you notice that patterns applied by habit stop serving the problem. "You have an API, then some intermediary layer, then a database." Rote learned. Rarely interrogated.
+
+Effect Schema broke that rhythm by making me fight for it.
+
+I tried to define a schema and reuse it everywhere. The schema was immutable by default. I couldn't mutate fields on objects derived from it. My instinct was to reach for flexibility, to bend the tool to my assumptions.
+
+Then the penny dropped: I was thinking about schemas wrong.
+
+I was treating them as object definitions—containers to hold and modify data. But schemas aren't containers. They're contracts. They don't define "what this object is." They define "what this data looks like when it crosses this boundary." The immutability wasn't a limitation. It was the point.
+
+That reframing changed everything. If schemas are contracts, then architecture isn't about objects and methods—it's about data flow. How does data move through the system? What shape does it take at each boundary? What transformation happens between one layer and the next? Everything else—layers, abstractions, services—exists in service of this.
+
+Had I started by asking how data would move through my application, I would have made sharper decisions from the start. Not reached for patterns that were well-meaning but not actually useful to the problem at hand. There's a lesson here about designing to constraints: craft a solution that satisfies the problem and no more.
+
+Once I saw it this way, the architecture revealed itself. Data enters the system in one shape (API input), gets validated and transformed into another shape (domain), and eventually persists in yet another shape (storage). Each transformation is a boundary. Each boundary needs a contract. Each contract is a schema.
+
+I'd known this intellectually. Separation of concerns, layered architecture, all the textbook stuff. But Effect made it tactile. The friction surfaced questions I'd been glossing over: What does the data look like here? What operations make sense at this point? Why does this layer exist?
+
+The Effect Schema docs put it plainly: schemas are blueprints. They describe structure and types, not mutable runtime state. Effect's entire model—Layers, dependencies, composable services—was pushing me toward boundaries I'd been treating as optional.
+
+And I'd been resisting.
+
+## A System is a Quiltwork of Composable Boundaries
+
+Once I stopped fighting, the architecture became clear:
+
+1. **API Surface (DTO Schema)** — What clients send and receive
+2. **Domain Layer (Domain Schema)** — Core business logic, persistence-agnostic
+3. **Storage Layer (Storage Schema)** — How data persists, database-specific concerns
+
+Each boundary requires translation. Each translation requires a contract. Each contract is a schema.
+
+```
+  ┌─────────┐   ┌─────────┐   ┌─────────┐   ┌──────────┐   ┌─────────┐
+  │  Client │   │   API   │   │ Service │   │Repository│   │ Storage │
+  └────┬────┘   └────┬────┘   └────┬────┘   └────┬─────┘   └────┬────┘
+       │             │             │             │              │
+       │  Request    │             │             │              │
+       │────────────▶│             │             │              │
+       │             │             │             │              │
+       │             │ Validate    │             │              │
+       │             │ (DTO Schema)│             │              │
+       │             │─────────────│             │              │
+       │             │             │             │              │
+       │             │ DTO → Domain│             │              │
+       │             │────────────▶│             │              │
+       │             │             │             │              │
+       │             │             │ Business    │              │
+       │             │             │ Logic       │              │
+       │             │             │─────────────│              │
+       │             │             │             │              │
+       │             │             │  save()     │              │
+       │             │             │────────────▶│              │
+       │             │             │             │              │
+       │             │             │             │ Domain →     │
+       │             │             │             │ Storage      │
+       │             │             │             │─────────────▶│
+       │             │             │             │              │
+       │             │             │             │   persist    │
+       │             │             │             │◀─────────────│
+       │             │             │             │              │
+       │             │             │  domain     │              │
+       │             │             │◀────────────│              │
+       │             │             │             │              │
+       │             │ Domain → DTO│             │              │
+       │             │ (View)      │             │              │
+       │             │◀────────────│             │              │
+       │             │             │             │              │
+       │  Response   │             │             │              │
+       │◀────────────│             │             │              │
+       │             │             │             │              │
+  ┌────┴────┐   ┌────┴────┐   ┌────┴────┐   ┌────┴─────┐   ┌────┴────┐
+  │  Client │   │   API   │   │ Service │   │Repository│   │ Storage │
+  └─────────┘   └─────────┘   └─────────┘   └──────────┘   └─────────┘
+
+                          SCHEMA BOUNDARIES
+                          ─────────────────
+                    API ←→ Service : Request/Response DTO
+                    Service ←→ Domain : Domain Schema
+                    Repository ←→ Storage : Storage Schema
+```
+
+### 1. DTO Schema: The API Contract
+
+DTOs shape the contract between server and clients. A good API is more lenient than internal types—accept broadly, validate strictly. We don't want to over-constrain how clients interact with our API. Optional fields, sensible defaults, minimal requirements. Internal types can be strict; the API should be forgiving. This flexibility pays off: when behaviour needs to change, you modify server logic, not client integrations.
+
+```
+src/models/dto/
+  ├── request/    # What clients send (CreateGameRequest, JoinGameRequest)
+  └── response/   # What clients receive (GameResponse)
+```
+
+**Why separate Request and Response DTOs?**
+
+- **Request DTOs** validate what clients send, they need different rules than storage (e.g., accepting optional fields with defaults).
+- **Response DTOs** control what clients see: hiding internal fields like `expiresAt` timer details.
+
+Beyond this, there was a concept that the Effect App template recommended in the [Architecture document](https://github.com/effect-app/docs/blob/main/Architecture.md), the concept of **Views**:
+
+> "A View represents specific types of data representation that can be derived from Models. They are essentially information included in Response messages."
+
+Views feel like the type-level equivalent of what a BFF (Backend for Frontend) does — a specific representation of a domain object for a particular consumer. In the case of the game I was writing, a `Game` entity might have:
+
+- **GameAdminGameView**: internal admin details about the state of a game.
+- **PlayerGameView**: internal data about how a players game is progressing.
+
+### 2. Domain Schema: The Truth
+
+The domain schema represents **core business logic**, the truth of the application. It contains behaviour, validation rules, and business invariants. It's persistence-agnostic and API-agnostic.
+
+```typescript
+export class GameDomain extends Schema.Class<GameDomain>("GameDomain")(GameDomainFields) {
+	canJoin(): boolean {
+		if (this.isExpired()) {
+			return false;
+		}
+		return (
+			this.status === GameStatusEnum.WAITING_FOR_PLAYERS && this.players.length < this.maxPlayers
+		);
+	}
+
+	canStart(): boolean {
+		return this.players.length >= 2;
+	}
+
+	isExpired(): boolean {
+		return this.status === GameStatusEnum.EXPIRED || new Date() > this.expiresAt;
+	}
+}
+```
+
+Business rules like `canJoin()` are co-located with data. The entity is self-validating.
+
+**Why this matters:** The [Architecture document](https://github.com/effect-app/docs/blob/main/Architecture.md) states:
+
+> "Behaviour, the what, how, and when we can operate on and with this data is defined in Core modules... Behaviour encodes the rules of the business."
+
+By keeping rules on the entity, changes to business logic happen in one place, and consumers don't need to know the rules they just ask the entity.
+
+I learnt something else about the domain entity. When the logic contained in this entity becomes too complex or produces side effects, then this is best extracted into its own service, and this is why intermediary service layers are necessary.
+
+### 3. Storage Schema: The Persistence Contract
+
+The storage schema represents **how data is persisted**. It can extend the domain but adds persistence-specific concerns:
+
+```typescript
+export const GameStorage = Schema.Struct({
+	...GameDomain.fields, // Inherit domain structure
+	createdAt: Schema.Date, // Add persistence metadata
+});
+```
+
+A **Mapper** handles translation between domain and storage:
+
+```typescript
+export class GameMapper {
+	public toStorage(game: GameDomain) {
+		return GameStorage.make({
+			...game,
+			createdAt: new Date(),
+		});
+	}
+
+	public toDomain(game: GameStorage) {
+		return GameDomain.make({ ...game });
+	}
+}
+```
+
+## Conclusion
+
+Effect Schema better taught me to see my application as **composed boundaries with explicit contracts**.
+
+The immutability that frustrated me was a feature, not a bug. Schemas are blueprints. They define _what_ data looks like, not _where_ it lives or _how_ it gets there. And by forcing separation between API, domain, and storage schemas, Effect pushed me toward architecture patterns I'd read about but never truly internalised.
+
+For a simple game, this might seem like over-engineering. But the cost of clean boundaries is low, and the cost of not having them compounds. I'd rather learn these patterns on a small project than discover I needed them when it's too late.
+
+## References
+
+- [Architecture Spec For Effect Boilerplate App](https://github.com/effect-app/docs/blob/main/Architecture.md) This provided me a blueprint for where sensible boundaries in a system should be and how to use Schema to enforce them.
+- [Introduction to Effect Schema](https://effect.website/docs/schema/introduction/) The official docs for Schema.
