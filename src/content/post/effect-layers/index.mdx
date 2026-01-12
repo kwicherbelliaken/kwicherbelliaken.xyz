@@ -1,0 +1,336 @@
+---
+title: "Effect Layers"
+description: "How to define services in Effect, from simple tagged services to Layer-based dependency injection."
+publishDate: 12 January 2026
+tags: ["engineering", "typescript", "effect"]
+---
+
+In Effect, a service is reusable code that other code depends on, typically a domain abstraction, an API, or an architectural layer.
+
+Effect uses the type system to ensure all dependencies are satisfied before the program runs. This moves dependency management to compile-time, making missing dependencies impossible to miss.
+
+There are two ways to define a service: with or without the Layer abstraction.
+
+We'll use a GameRepository service (encapsulating in-memory game state) as our example. First, we'll build it without Layer and hit a wall when our service depends on another service. Then we'll see how Layer solves this.
+
+## Defining a Service Without Layers
+
+### The Simple Case: No Dependencies
+
+This is the interface for the `GameRepository`:
+
+```typescript
+interface GameRepositoryInterface {
+	readonly getAllGames: () => Effect.Effect<GameStorage[]>;
+}
+```
+
+We define the service by tagging it and associating it with the interface. We also declare local state for storing games:
+
+```typescript
+class GameRepository extends Context.Tag("GameRepository")<
+	GameRepository,
+	GameRepositoryInterface
+>() {
+	static readonly games = new Map<GameStorage["id"], GameStorage>();
+}
+```
+
+Now we can use this service in our program:
+
+```typescript
+const program = Effect.gen(function* () {
+	const gameRepository = yield* GameRepository;
+	const games = yield* gameRepository.getAllGames();
+
+	for (const game of games) {
+		yield* Effect.log(game.status);
+	}
+});
+```
+
+However, we cannot run this program. The type system tells us this. The `Requirements` channel shows `GameRepository` is unsatisfied.
+
+```typescript
+//       ┌─ Effect<void, never, GameRepository>
+//       ▼
+const program = Effect.gen(function* () {
+	const gameRepository = yield* GameRepository;
+	const games = yield* gameRepository.getAllGames();
+
+	for (const game of games) {
+		yield* Effect.log(game.status);
+	}
+});
+```
+
+Attempting to run it fails:
+
+```typescript
+//       ┌─ Argument of type 'Effect<void, never, GameRepository>'
+//       |  is not assignable to parameter of type 'Effect<void,
+//       |  never, never>'
+//       ▼
+Effect.runFork(program);
+```
+
+The reason? Well, we've defined an interface but haven't provided an implementation. Here is an implementation:
+
+```typescript
+export const GameRepositoryImplementation = {
+	getAllGames: () => {
+		return Effect.succeed(Array.from(GameRepository.games.values()));
+	},
+};
+```
+
+Which we can then supply to the program with `Effect.provideService`. The `Requirements` channel is now empty:
+
+```typescript
+//       ┌─ Effect<void, never, never>
+//       ▼
+const runnable = program.pipe(Effect.provideService(GameRepository, GameRepositoryImplementation));
+
+Effect.runFork(runnable);
+```
+
+This works. But what happens when `GameRepository` depends on another service?
+
+### The Problem: Service-to-Service Dependencies
+
+Suppose we have a `Config` service:
+
+```typescript
+class Config extends Context.Tag("Config")<Config, {}>() {}
+```
+
+That `getAllGames` depends on:
+
+```typescript
+export const GameRepositoryImplementation = {
+	getAllGames: () =>
+		Effect.gen(function* () {
+			const config = yield* Config; // Used for some purpose or another ...
+
+			return Array.from(GameRepository.games.values());
+		}),
+};
+```
+
+And because we have not yet provided an implementation for `Config`, our program will not run.
+
+```typescript
+const runnable = program.pipe(
+	//                                                    ┌─ Type 'Config' is not
+	//                                                    |  assignable to type 'never'
+	//                                                    ▼
+	Effect.provideService(GameRepository, GameRepositoryImplementation),
+);
+```
+
+We fix this by providing an implementation. For simplicities sake, it is an empty object.
+
+```typescript
+const runnable = program.pipe(
+	Effect.provideService(GameRepository, GameRepositoryImplementation),
+	Effect.provideService(Config, {}),
+);
+```
+
+However, you may have noticed, there is drift between our `GameRepository` interface and implementation definitions where the implementation now has a dependency on `Config`. So, we update our `GameRepository` interface.
+
+```typescript
+export interface GameRepositoryInterface {
+	readonly getAllGames: () => Effect.Effect<GameStorage[], never, Config>;
+}
+```
+
+But this is bad. We have leaked details about the service dependency into our interface and made aware our service aware of its dependencies [^2]. This is problematic:
+
+- **Coupling**: Consumers of `GameRepository` now depend on `Config`, even if they don't use it directly.
+
+- **Rigidity**: If we later change the implementation to not use `Config`, the interface still demands it.
+
+- **Interface drift**: The interface and implementation can diverge. We might declare a dependency we never use.
+
+This also violates something of a soft principle of Effect when it comes to services. That _"service functions should avoid requiring dependencies directly"_ [^3]. What this means is that at the point we are providing a service to our program, the type signature of that service should have an empty `Requirements` channel. Ideally, we should not be fulfilling dependency obligations at the level (the context) where a dependency is being consumed.
+
+There is a better way. We can provide dependencies at the point of implementation construction, instead of against the interface. Enter _constructor effects_.
+
+### Constructor Effects
+
+The first step is to not express `Config` as a dependency on the interface.
+
+```typescript
+readonly getAllGames: () => Effect.Effect<GameStorage[], never>;
+```
+
+We then create an Effect that _constructs_ or _builds_ the implementation, `getAllGames`, capturing the dependencies through a closure.
+
+```typescript
+//                     ┌─ Effect.Effect<GameRepositoryInterface, never, Config>
+//                     ▼
+const makeGameRepositoryImplementationWithConfigDep = Effect.gen(function* () {
+	const config = yield* Config;
+	return GameRepository.of({
+		getAllGames: () =>
+			Effect.gen(function* () {
+				// yield* config.? // Do something with config
+				return Array.from(GameRepository.games.values());
+			}),
+	});
+});
+```
+
+We then provide the `GameRepository` service and its implementation with the `Config` dependency to the program using `.provideServiceEffect`.
+
+```typescript
+//        ┌─ Effect.Effect<void, never, Config>
+//        ▼
+const nonrunnable = program.pipe(
+	Effect.provideServiceEffect(GameRepository, makeGameRepositoryImplementationWithConfigDep),
+);
+
+//        ┌─ Effect.Effect<void, never, never>
+//        ▼
+const runnable = nonrunnable.pipe(Effect.provideService(Config, {}));
+```
+
+`Config` is a requirement to _build_ a certain implementation of `GameRepository`, not a requirement to _use_ it. The interface stays clean.
+
+As a side note, I do find this a little complex as we sort of invert the dependency graph as the last dependency we provided, what we pipe to `nonrunnable`, is the one that is used at the lowest level.
+
+Again, there is a better way. Enter Layers.
+
+## Defining a Service With Layers
+
+Layers are an abstraction that leverage the act of building the service and handling dependencies at the construction level rather than the service level. They are constructors for services [^4]. They achieve the same ends as we did with our `makeGameRepositoryImplementationWithConfigDep` implementation.
+
+Layers separate implementation details from the service interface, handling dependency graphs through compositional APIs:
+
+```
+        ┌─── The service to be created
+        │                ┌─── The possible error
+        │                │      ┌─── The required dependencies
+        ▼                ▼      ▼
+Layer<RequirementsOut, Error, RequirementsIn>
+```
+
+We can use Layers to define services that are without dependencies, like how we had before introducing `Config`.
+
+```typescript
+const GameRepositoryLive = Layer.succeed(GameRepository, {
+	getAllGames: () => Effect.succeed(Array.from(GameRepository.games.values())),
+});
+```
+
+Our program consumes it in the same way:
+
+```typescript
+const runnable = Effect.provide(program, GameRepositoryLive);
+```
+
+But they really shine once we are presented with the scenario of having a dependency between our services. Under these conditions `Layer.succeed` will not work.
+
+```typescript
+//           ┌─ Type 'Config' is not assignable to type 'never'
+//           ▼
+const GameRepositoryLive = Layer.succeed(GameRepository, {
+	getAllGames: () =>
+		Effect.gen(function* () {
+			const config = yield* Config;
+			// yield* config.? // Do something with config
+			return Array.from(GameRepository.games.values());
+		}),
+});
+```
+
+This is because there is a type mismatch between what we having defined on our `GameRepository` interface, where we haven't changed the signature to include `Config`, and our implementation where it is very apparently depended upon.
+
+```
+// 1. Interface signature
+Effect<GameStorage[], never, never>
+
+// 2. Implementation signature
+Effect<GameStorage[], never, Config>
+```
+
+Use `Layer.effect` instead. It accepts an Effect that constructs the service [^5].
+
+```typescript
+//           ┌─ Layer.Layer<GameRepository, never, Config>
+//           ▼
+const GameRepositoryLive = Layer.effect(
+	GameRepository,
+	Effect.gen(function* () {
+		const config = yield* Config;
+		// yield* config.? // Do something with config
+		return {
+			getAllGames: () => Effect.succeed(Array.from(GameRepository.games.values())),
+		};
+	}),
+);
+```
+
+Before we can use this layer, we need to satisfy its `Config` dependency.
+
+```typescript
+const ConfigLive = Layer.succeed(Config, {});
+
+//        ┌─ Layer.Layer<GameRepository, never, never>
+//        ▼
+const MainLive = GameRepositoryLive.pipe(Layer.provide(ConfigLive));
+
+const runnable = Effect.provide(program, MainLive);
+```
+
+It is worth pointing out that these two composition styles are equivalent:
+
+```typescript
+const MainLive = GameRepositoryLive.pipe(Layer.provide(ConfigLive));
+
+const MainLive = Layer.provide(GameRepositoryLive, ConfigLive);
+```
+
+## Best Practices
+
+### Provide Dependencies at the Declaration Site
+
+A best practice is to provide dependencies where the service is declared.
+
+```typescript
+const GameRepositoryLive = Layer.effect(
+  GameRepository,
+  Effect.gen(function* () {
+    ...,
+  })
+).pipe(Layer.provide(ConfigLive));
+```
+
+Now the entry point only needs to provide `GameRepositoryLive`:
+
+```typescript
+const MainLive = GameRepositoryLive;
+
+const runnable = Effect.provide(program, MainLive);
+```
+
+The dependency on `Config` is an implementation detail, invisible to consumers.
+
+## Conclusion
+
+Without Layers, service-to-service dependencies leak into interfaces, coupling consumers to implementation details. The workaround—constructor Effects with closures—is verbose and scales poorly.
+
+Layers formalise this pattern. They separate _what a service provides_ from _what it needs to be built_. Dependencies become construction-time concerns, invisible to consumers. The compositional API (`Layer.provide`, `Layer.merge`) handles complex dependency graphs without manual wiring.
+
+Use `Layer.succeed` for services with no dependencies. Use `Layer.effect` when construction requires other services. Provide dependencies at the declaration site to keep implementation details encapsulated.
+
+[^1]: See [Effect Documentation: Managing Services](https://effect.website/docs/requirements-management/services/#managing-services-with-effect)
+
+[^2]: Maxwell Brown discusses this problem at [1:42:27](https://youtu.be/upXJJ9maWPc?t=6147)
+
+[^3]: Maxwell Brown, [1:42:55](https://youtu.be/upXJJ9maWPc?t=6175)
+
+[^4]: See [Effect Documentation: Layers](https://effect.website/docs/requirements-management/layers/)
+
+[^5]: Maxwell Brown explains `Layer.effect` at [1:58:39](https://youtu.be/upXJJ9maWPc?t=7119)
